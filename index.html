@@ -1,0 +1,2463 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfolio — Élite</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@400;500&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* ===== PALETA ROCK / INDUSTRIAL — DARK (default) ===== */
+        :root {
+            --bg-base:       #0e0e0f;
+            --bg-card:       #161618;
+            --bg-elevated:   #1e1e21;
+            --bg-input:      #111113;
+            --bg-header:     rgba(14,14,15,0.96);
+            --bg-tabs:       rgba(14,14,15,0.97);
+            --border:        #2a2a2e;
+            --border-bright: #3a3a3f;
+            --text-primary:  #e8e6e1;
+            --text-secondary:#9a9590;
+            --text-muted:    #5a5755;
+            --accent:        #c8a97e;
+            --accent-dim:    #7a6548;
+            --accent-glow:   rgba(200,169,126,0.12);
+            --red:           #c0392b;
+            --red-dim:       rgba(192,57,43,0.15);
+            --green:         #4e7a5e;
+            --green-dim:     rgba(78,122,94,0.15);
+            --shadow-card:   rgba(0,0,0,0.4);
+            --ticker-bg:     rgba(22,22,24,0.80);
+        }
+
+        /* ===== PALETA DIURNA — slate/piedra cálida ===== */
+        [data-theme="light"] {
+            --bg-base:       #f0ede8;
+            --bg-card:       #faf8f5;
+            --bg-elevated:   #ede9e3;
+            --bg-input:      #e8e4dd;
+            --bg-header:     rgba(240,237,232,0.97);
+            --bg-tabs:       rgba(240,237,232,0.98);
+            --border:        #d4cec5;
+            --border-bright: #b8b0a5;
+            --text-primary:  #1e1c19;
+            --text-secondary:#5a534a;
+            --text-muted:    #a09890;
+            --accent:        #9a6f3a;
+            --accent-dim:    #b8894e;
+            --accent-glow:   rgba(154,111,58,0.10);
+            --red:           #a33020;
+            --red-dim:       rgba(163,48,32,0.12);
+            --green:         #3a6b4e;
+            --green-dim:     rgba(58,107,78,0.12);
+            --shadow-card:   rgba(0,0,0,0.08);
+            --ticker-bg:     rgba(237,233,227,0.85);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background: var(--bg-base);
+            color: var(--text-primary);
+            font-family: 'Syne', sans-serif;
+            min-height: 100vh;
+            transition: background 0.3s ease, color 0.3s ease;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.025'/%3E%3C/svg%3E");
+        }
+
+        /* ===== TIPOGRAFÍA ===== */
+        .font-display { font-family: 'Bebas Neue', sans-serif; letter-spacing: 0.05em; }
+        .font-mono    { font-family: 'DM Mono', monospace; }
+        .font-ui      { font-family: 'Syne', sans-serif; }
+
+        /* ===== TABS ===== */
+        .tab-content { display: none; opacity: 0; transition: opacity 0.35s ease; }
+        .tab-content.active { display: block; opacity: 1; }
+
+        /* ===== CARDS ===== */
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            transition: border-color 0.25s ease, box-shadow 0.25s ease, background 0.3s ease;
+        }
+        .card:hover {
+            border-color: var(--border-bright);
+            box-shadow: 0 8px 32px var(--shadow-card);
+        }
+
+        /* ===== HEADER — 2 filas ===== */
+        header {
+            background: var(--bg-header);
+            border-bottom: 1px solid var(--border);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            transition: background 0.3s ease, border-color 0.3s ease;
+        }
+        .header-row1 {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 50px;
+            gap: 12px;
+        }
+        .header-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-shrink: 0;
+        }
+        .header-logo-mark {
+            width: 7px;
+            height: 7px;
+            background: var(--accent);
+            border-radius: 50%;
+            animation: pulse-bronze 2.5s infinite;
+            flex-shrink: 0;
+        }
+        @keyframes pulse-bronze {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50%       { opacity: 0.4; transform: scale(0.7); }
+        }
+        .header-title {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.25rem;
+            letter-spacing: 0.12em;
+            color: var(--text-primary);
+            transition: color 0.3s;
+        }
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            flex-shrink: 0;
+        }
+        /* Fila 2: ticker precios — marquee scroll */
+        .header-ticker {
+            border-top: 1px solid var(--border);
+            background: var(--ticker-bg);
+            transition: background 0.3s, border-color 0.3s;
+            overflow: hidden;
+            position: relative;
+        }
+        /* fade edges */
+        .header-ticker::before,
+        .header-ticker::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            width: 40px;
+            height: 100%;
+            z-index: 2;
+            pointer-events: none;
+        }
+        .header-ticker::before {
+            left: 0;
+            background: linear-gradient(to right, var(--ticker-bg), transparent);
+        }
+        .header-ticker::after {
+            right: 0;
+            background: linear-gradient(to left, var(--ticker-bg), transparent);
+        }
+        .ticker-track {
+            display: flex;
+            align-items: center;
+            height: 32px;
+            width: max-content;
+            animation: ticker-scroll 28s linear infinite;
+            gap: 0;
+        }
+        .ticker-track:hover { animation-play-state: paused; }
+        @keyframes ticker-scroll {
+            0%   { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+        .ticker-item {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            padding: 0 20px;
+            white-space: nowrap;
+            flex-shrink: 0;
+            border-right: 1px solid var(--border);
+        }
+        .ticker-label {
+            font-family: 'Syne', sans-serif;
+            font-size: 9px;
+            font-weight: 700;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+        }
+        .ticker-price {
+            font-family: 'DM Mono', monospace;
+            font-size: 11px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            transition: color 0.3s;
+        }
+        .ticker-fx {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 0 20px;
+            border-right: 1px solid var(--border);
+            flex-shrink: 0;
+        }
+        .ticker-fx .fx-lbl {
+            font-family:'Syne',sans-serif; font-size:9px; font-weight:700;
+            letter-spacing:0.1em; text-transform:uppercase; color:var(--text-muted);
+        }
+        .ticker-fx .fx-val {
+            font-family:'DM Mono',monospace; font-size:11px; color:var(--accent); font-weight:500;
+        }
+        .ticker-sep { width:1px; height:14px; background:var(--border); margin:0 8px; flex-shrink:0; }
+        @keyframes price-flash { 0%{opacity:0.2} 100%{opacity:1} }
+        .price-updated { animation: price-flash 0.45s ease; }
+
+        /* ===== TABS NAV ===== */
+        .tabs-nav {
+            position: sticky;
+            top: 82px;
+            z-index: 40;
+            background: var(--bg-tabs);
+            border-bottom: 1px solid var(--border);
+            backdrop-filter: blur(12px);
+            transition: background 0.3s, border-color 0.3s;
+        }
+        .btn {
+            font-family: 'Syne', sans-serif;
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            padding: 6px 12px;
+            border-radius: 3px;
+            border: 1px solid var(--border-bright);
+            background: var(--bg-elevated);
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            white-space: nowrap;
+        }
+        .btn:hover {
+            background: var(--bg-card);
+            border-color: var(--accent-dim);
+            color: var(--accent);
+        }
+        .btn-primary {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: #0e0e0f;
+            font-weight: 700;
+        }
+        .btn-primary:hover {
+            background: #dbb98e;
+            border-color: #dbb98e;
+            color: #0e0e0f;
+        }
+        .btn-icon {
+            width: 32px;
+            height: 32px;
+            padding: 0;
+            justify-content: center;
+            border-radius: 50%;
+        }
+        .btn-saved {
+            background: var(--green);
+            border-color: var(--green);
+            color: #fff;
+        }
+
+        /* ===== FX DISPLAY ===== */
+        .fx-display {
+            font-family: 'DM Mono', monospace;
+            font-size: 11px;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .fx-value { color: var(--text-secondary); font-weight: 500; }
+
+        /* ===== TABS NAV ===== */
+        .tabs-nav {
+            position: sticky;
+            top: 82px;
+            z-index: 40;
+            background: var(--bg-tabs);
+            border-bottom: 1px solid var(--border);
+            backdrop-filter: blur(12px);
+            transition: background 0.3s, border-color 0.3s;
+        }
+        .tabs-inner {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 24px;
+            display: flex;
+            gap: 0;
+            overflow-x: auto;
+            scrollbar-width: none;
+        }
+        .tabs-inner::-webkit-scrollbar { display: none; }
+        .tab-btn {
+            font-family: 'Syne', sans-serif;
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            padding: 14px 20px;
+            border: none;
+            background: none;
+            cursor: pointer;
+            position: relative;
+            white-space: nowrap;
+            transition: color 0.2s ease;
+        }
+        .tab-btn::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: var(--accent);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+        .tab-btn:hover { color: var(--text-secondary); }
+        .tab-btn.active { color: var(--accent); }
+        .tab-btn.active::after { transform: scaleX(1); }
+
+        /* ===== MAIN ===== */
+        main {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 32px 24px 120px;
+        }
+
+        /* ===== METRIC CARDS ===== */
+        .metric-label {
+            font-family: 'Syne', sans-serif;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+        }
+        .metric-value {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 2rem;
+            letter-spacing: 0.04em;
+            color: var(--text-primary);
+            line-height: 1;
+            margin-top: 6px;
+        }
+        .metric-sub {
+            font-family: 'DM Mono', monospace;
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+        .metric-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 3px;
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--accent);
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        /* ===== PNL BADGES ===== */
+        .pnl-pos {
+            background: var(--green-dim);
+            color: #7fbf95;
+            border: 1px solid rgba(78,122,94,0.3);
+            font-family: 'DM Mono', monospace;
+            font-size: 11px;
+            font-weight: 500;
+            padding: 2px 8px;
+            border-radius: 2px;
+        }
+        .pnl-neg {
+            background: var(--red-dim);
+            color: #e07060;
+            border: 1px solid rgba(192,57,43,0.25);
+            font-family: 'DM Mono', monospace;
+            font-size: 11px;
+            font-weight: 500;
+            padding: 2px 8px;
+            border-radius: 2px;
+        }
+
+        /* ===== PROFIT CARD STATES ===== */
+        .profit-card-pos {
+            border-left: 3px solid var(--green) !important;
+        }
+        .profit-card-neg {
+            border-left: 3px solid var(--red) !important;
+        }
+        .profit-val-pos { color: #7fbf95 !important; }
+        .profit-val-neg { color: #e07060 !important; }
+
+        /* ===== SECTION HEADERS ===== */
+        .section-title {
+            font-family: 'Syne', sans-serif;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .section-title::before {
+            content: '';
+            width: 16px;
+            height: 1px;
+            background: var(--accent);
+        }
+
+        /* ===== TABLE ===== */
+        .data-table { width: 100%; border-collapse: collapse; }
+        .data-table thead th {
+            font-family: 'Syne', sans-serif;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            padding: 10px 20px;
+            text-align: left;
+            background: var(--bg-elevated);
+            border-bottom: 1px solid var(--border);
+            cursor: pointer;
+            user-select: none;
+            white-space: nowrap;
+        }
+        .data-table thead th:hover { color: var(--accent); }
+        .data-table tbody tr {
+            border-bottom: 1px solid var(--border);
+            transition: background 0.15s;
+        }
+        .data-table tbody tr:last-child { border-bottom: none; }
+        .data-table tbody tr:hover { background: var(--bg-elevated); }
+        .data-table tbody td {
+            padding: 14px 20px;
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+        .data-table tbody td:first-child {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 16px;
+            letter-spacing: 0.08em;
+            color: var(--text-primary);
+        }
+        .data-table tbody td .qty {
+            font-family: 'DM Mono', monospace;
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        /* ===== INPUTS ===== */
+        .field-label {
+            font-family: 'Syne', sans-serif;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            display: block;
+            margin-bottom: 5px;
+        }
+        input[type="number"], select {
+            width: 100%;
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: 3px;
+            padding: 8px 12px;
+            font-family: 'DM Mono', monospace;
+            font-size: 13px;
+            color: var(--text-primary);
+            outline: none;
+            transition: border-color 0.2s;
+            -moz-appearance: textfield;
+        }
+        input[type="number"]::-webkit-outer-spin-button,
+        input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; }
+        input[type="number"]:focus, select:focus { border-color: var(--accent-dim); }
+        input[readonly] { color: var(--text-muted); cursor: not-allowed; }
+        select { appearance: none; cursor: pointer; }
+        select option { background: var(--bg-elevated); }
+
+        /* ===== METRIC MINI CARDS ===== */
+        .mini-metric {
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            border-radius: 3px;
+            padding: 10px 12px;
+        }
+        .mini-metric .mini-label {
+            font-family: 'Syne', sans-serif;
+            font-size: 9px;
+            font-weight: 700;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+        }
+        .mini-metric .mini-value {
+            font-family: 'DM Mono', monospace;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-top: 4px;
+            display: block;
+        }
+
+        /* ===== BREAKEVEN BOX ===== */
+        .breakeven-box {
+            background: rgba(200,169,126,0.06);
+            border: 1px solid var(--accent-dim);
+            border-radius: 3px;
+            padding: 16px;
+        }
+        .breakeven-box .be-label {
+            font-family: 'Syne', sans-serif;
+            font-size: 9px;
+            font-weight: 700;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: var(--accent-dim);
+        }
+        .breakeven-box .be-value {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 2rem;
+            color: var(--accent);
+            letter-spacing: 0.04em;
+            line-height: 1;
+            margin-top: 4px;
+        }
+
+        /* ===== DIVIDER ROW ===== */
+        .divider-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--border);
+            font-size: 12px;
+        }
+        .divider-row:last-child { border-bottom: none; }
+        .divider-row .dr-label { color: var(--text-muted); }
+        .divider-row .dr-value {
+            font-family: 'DM Mono', monospace;
+            color: var(--text-secondary);
+        }
+
+        /* ===== CHART CONTAINERS ===== */
+        .chart-wrap { position: relative; }
+        .chart-legend {
+            display: flex;
+            gap: 14px;
+            flex-wrap: wrap;
+            margin-bottom: 12px;
+        }
+        .chart-legend-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-family: 'Syne', sans-serif;
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+        }
+        .chart-legend-dot {
+            width: 16px;
+            height: 2px;
+            border-radius: 1px;
+            flex-shrink: 0;
+        }
+        .chart-legend-dot.dashed {
+            background: repeating-linear-gradient(90deg, currentColor 0, currentColor 4px, transparent 4px, transparent 8px);
+        }
+
+        /* ===== PROGRESS BAR ===== */
+        .progress-track {
+            width: 56px;
+            height: 3px;
+            background: var(--bg-elevated);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+        .progress-fill-pos {
+            height: 100%;
+            background: var(--green);
+            border-radius: 2px;
+            transition: width 0.6s ease;
+        }
+        .progress-fill-neg {
+            height: 100%;
+            background: var(--red);
+            border-radius: 2px;
+            transition: width 0.6s ease;
+        }
+
+        /* ===== SKELETON LOADER ===== */
+        .skeleton {
+            background: linear-gradient(90deg, var(--bg-elevated) 25%, var(--border) 50%, var(--bg-elevated) 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+            border-radius: 2px;
+            height: 1em;
+        }
+        @keyframes shimmer {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        /* ===== GECKO ASISTENTE ===== */
+        .gecko-container {
+            position: fixed;
+            bottom: 22px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            animation: gecko-wander 10s infinite ease-in-out;
+            pointer-events: auto;
+        }
+        @keyframes gecko-wander {
+            0%   { transform: translateX(-50%) translateY(0px); }
+            15%  { transform: translateX(-30%) translateY(-8px); }
+            30%  { transform: translateX(-5%)  translateY(4px); }
+            45%  { transform: translateX(15%)  translateY(-12px); }
+            60%  { transform: translateX(28%)  translateY(2px); }
+            75%  { transform: translateX(10%)  translateY(-6px); }
+            88%  { transform: translateX(-18%) translateY(8px); }
+            100% { transform: translateX(-50%) translateY(0px); }
+        }
+        .gecko-avatar {
+            width: 60px;
+            height: 60px;
+            background: radial-gradient(circle at 35% 35%, var(--bg-elevated), var(--bg-card));
+            border: 2px solid var(--accent-dim);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            box-shadow: 0 0 20px var(--accent-glow), 0 8px 24px var(--shadow-card);
+            transition: box-shadow 0.2s ease, border-color 0.2s ease, background 0.3s ease;
+            animation: gecko-breathe 3.5s infinite ease-in-out;
+            position: relative;
+        }
+        .gecko-avatar:hover {
+            box-shadow: 0 0 32px rgba(200,169,126,0.28), 0 12px 32px var(--shadow-card);
+            border-color: var(--accent);
+        }
+        @keyframes gecko-breathe {
+            0%, 100% { transform: scale(1); }
+            40%  { transform: scale(1.04); }
+            70%  { transform: scale(0.97); }
+        }
+        .gecko-bubble {
+            background: var(--bg-card);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            color: var(--text-secondary);
+            border: 1px solid var(--border-bright);
+            border-radius: 10px 10px 10px 3px;
+            padding: 9px 14px;
+            margin-bottom: 10px;
+            font-family: 'Syne', sans-serif;
+            font-size: 12px;
+            font-weight: 500;
+            max-width: 220px;
+            text-align: center;
+            opacity: 0;
+            transform: translateY(6px);
+            transition: opacity 0.4s ease, transform 0.3s ease, background 0.3s ease, color 0.3s ease;
+            pointer-events: none;
+            box-shadow: 0 4px 16px var(--shadow-card);
+        }
+        .gecko-bubble.show { opacity: 1; transform: translateY(0); pointer-events: auto; }
+
+        /* ===== GECKO PANEL ===== */
+        .gecko-panel {
+            position: fixed;
+            bottom: 96px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 320px;
+            max-height: 400px;
+            background: var(--bg-card);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--border-bright);
+            border-radius: 6px;
+            padding: 16px;
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+            z-index: 9998;
+            box-shadow: 0 24px 64px var(--shadow-card);
+            transition: background 0.3s ease, border-color 0.3s ease;
+        }
+        .gecko-panel.open { display: flex; }
+        .gecko-panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 10px;
+            margin-bottom: 12px;
+        }
+        .gecko-panel-header h4 {
+            font-family: 'Syne', sans-serif;
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 0.06em;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .gecko-panel-header h4 span { font-size: 16px; }
+        .gecko-panel-header button {
+            background: none;
+            border: none;
+            font-size: 16px;
+            cursor: pointer;
+            color: var(--text-muted);
+            transition: color 0.2s;
+        }
+        .gecko-panel-header button:hover { color: var(--text-secondary); }
+        .gecko-panel-body {
+            overflow-y: auto;
+            flex: 1;
+            scrollbar-width: thin;
+            scrollbar-color: var(--border) transparent;
+        }
+        .gecko-context-msg {
+            background: var(--bg-elevated);
+            border-left: 3px solid var(--accent);
+            border-radius: 0 3px 3px 0;
+            padding: 10px 12px;
+            margin-bottom: 12px;
+            font-size: 12px;
+            line-height: 1.6;
+            color: var(--text-secondary);
+        }
+        .faq-item {
+            padding: 8px 10px;
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            border-radius: 3px;
+            margin-bottom: 5px;
+            cursor: pointer;
+            font-family: 'Syne', sans-serif;
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            color: var(--text-secondary);
+            transition: all 0.15s;
+        }
+        .faq-item:hover {
+            border-color: var(--accent-dim);
+            color: var(--accent);
+            background: var(--accent-glow);
+        }
+        .faq-item i { margin-right: 6px; color: var(--accent-dim); }
+
+        /* ===== DIST CASILLAS ===== */
+        .dist-box {
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            border-radius: 3px;
+            padding: 12px;
+        }
+
+        @media (max-width: 900px) {
+            .chart-grid-general { grid-template-columns: 1fr !important; }
+            .asset-grid { grid-template-columns: 1fr !important; }
+        }
+        @media (max-width: 640px) {
+            .gecko-panel { width: 280px; bottom: 88px; }
+            .gecko-avatar { width: 52px; height: 52px; font-size: 26px; }
+            .gecko-container { bottom: 14px; }
+            main { padding: 20px 16px 100px; }
+            .header-row1 { padding: 0 12px; }
+            .btn-label { display: none; }
+            .btn { padding: 6px 9px; gap: 0; }
+            .btn-primary { padding: 6px 10px; }
+            .header-title { font-size: 1rem; }
+        }
+    </style>
+    <!-- ===== PWA ===== -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0e0e0f">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Portfolio">
+    <link rel="apple-touch-icon" href="icon-192.png">
+</head>
+<body>
+
+<!-- ===== HEADER — 2 filas ===== -->
+<header>
+    <!-- Fila 1: Logo + controles -->
+    <div class="header-row1">
+        <div class="header-logo">
+            <div class="header-logo-mark"></div>
+            <span class="header-title">Portfolio Élite</span>
+        </div>
+        <div class="header-actions">
+            <button class="btn" id="global-currency-toggle">
+                <i class="fas fa-exchange-alt"></i>
+                <span id="currency-label">MXN</span>
+            </button>
+            <button class="btn" id="save-btn" onclick="savePortfolioData()">
+                <i class="fas fa-save"></i><span class="btn-label"> Guardar</span>
+            </button>
+            <button class="btn" onclick="saveAsHTML()" title="Descargar HTML con datos actuales">
+                <i class="fas fa-file-code"></i><span class="btn-label"> HTML</span>
+            </button>
+            <button class="btn" onclick="exportToExcel()" title="Exportar métricas a Excel">
+                <i class="fas fa-file-excel"></i><span class="btn-label"> Excel</span>
+            </button>
+            <button class="btn btn-icon" id="dark-toggle" title="Cambiar tema">
+                <i class="fas fa-circle-half-stroke" id="dark-icon"></i>
+            </button>
+            <button class="btn btn-primary" onclick="fetchMarketData()">
+                <i class="fas fa-sync-alt"></i><span class="btn-label"> Actualizar</span>
+            </button>
+        </div>
+    </div>
+    <!-- Fila 2: Ticker de precios animado -->
+    <div class="header-ticker">
+        <div class="ticker-track" id="ticker-track">
+            <!-- Set A -->
+            <div class="ticker-fx">
+                <span class="fx-lbl">USD/MXN</span>
+                <span class="fx-val" id="global-fx">—</span>
+            </div>
+            <div class="ticker-item">
+                <span class="ticker-label"><i class="fab fa-bitcoin" style="color:#f7931a;margin-right:3px;"></i>BTC</span>
+                <span class="ticker-price" id="ticker-btc-usd">—</span>
+                <span class="ticker-price" style="color:var(--text-muted);font-size:10px;" id="ticker-btc-mxn"></span>
+            </div>
+            <div class="ticker-item">
+                <span class="ticker-label"><i class="fas fa-link" style="color:#2a5ada;margin-right:3px;"></i>LINK</span>
+                <span class="ticker-price" id="ticker-link-usd">—</span>
+                <span class="ticker-price" style="color:var(--text-muted);font-size:10px;" id="ticker-link-mxn"></span>
+            </div>
+            <div class="ticker-item">
+                <span class="ticker-label"><i class="fas fa-coins" style="color:var(--accent);margin-right:3px;"></i>NEXO</span>
+                <span class="ticker-price" id="ticker-nexo-usd">—</span>
+                <span class="ticker-price" style="color:var(--text-muted);font-size:10px;" id="ticker-nexo-mxn"></span>
+            </div>
+            <!-- Set B — clon exacto para loop seamless -->
+            <div class="ticker-fx">
+                <span class="fx-lbl">USD/MXN</span>
+                <span class="fx-val" id="global-fx-b">—</span>
+            </div>
+            <div class="ticker-item">
+                <span class="ticker-label"><i class="fab fa-bitcoin" style="color:#f7931a;margin-right:3px;"></i>BTC</span>
+                <span class="ticker-price" id="ticker-btc-usd-b">—</span>
+                <span class="ticker-price" style="color:var(--text-muted);font-size:10px;" id="ticker-btc-mxn-b"></span>
+            </div>
+            <div class="ticker-item">
+                <span class="ticker-label"><i class="fas fa-link" style="color:#2a5ada;margin-right:3px;"></i>LINK</span>
+                <span class="ticker-price" id="ticker-link-usd-b">—</span>
+                <span class="ticker-price" style="color:var(--text-muted);font-size:10px;" id="ticker-link-mxn-b"></span>
+            </div>
+            <div class="ticker-item">
+                <span class="ticker-label"><i class="fas fa-coins" style="color:var(--accent);margin-right:3px;"></i>NEXO</span>
+                <span class="ticker-price" id="ticker-nexo-usd-b">—</span>
+                <span class="ticker-price" style="color:var(--text-muted);font-size:10px;" id="ticker-nexo-mxn-b"></span>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- ===== TABS NAV ===== -->
+<div class="tabs-nav">
+    <div class="tabs-inner">
+        <button onclick="switchTab('general')" id="tab-btn-general" class="tab-btn active">
+            <i class="fas fa-th-large" style="margin-right:6px;font-size:10px;"></i>General
+        </button>
+        <button onclick="switchTab('btc')" id="tab-btn-btc" class="tab-btn">
+            <i class="fab fa-bitcoin" style="margin-right:6px;font-size:10px;"></i>Bitcoin
+        </button>
+        <button onclick="switchTab('link')" id="tab-btn-link" class="tab-btn">
+            <i class="fas fa-link" style="margin-right:6px;font-size:10px;"></i>Chainlink
+        </button>
+        <button onclick="switchTab('nexo')" id="tab-btn-nexo" class="tab-btn">
+            <i class="fas fa-coins" style="margin-right:6px;font-size:10px;"></i>Nexo
+        </button>
+    </div>
+</div>
+
+<!-- ===== MAIN CONTENT ===== -->
+<main>
+
+    <!-- ===== TAB GENERAL ===== -->
+    <div id="tab-general" class="tab-content active" style="display:block;">
+
+        <!-- KPI Cards -->
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;margin-bottom:24px;">
+
+            <div class="card" style="padding:20px;display:flex;align-items:flex-start;gap:14px;">
+                <div class="metric-icon"><i class="fas fa-coins"></i></div>
+                <div>
+                    <div class="metric-label">Inversión Total</div>
+                    <div class="metric-value" id="gen-total-inv" style="font-size:1.6rem;">—</div>
+                    <div class="metric-sub" id="gen-total-inv-usd">—</div>
+                </div>
+            </div>
+
+            <div class="card" style="padding:20px;display:flex;align-items:flex-start;gap:14px;">
+                <div class="metric-icon"><i class="fas fa-chart-line"></i></div>
+                <div>
+                    <div class="metric-label">Valor Actual</div>
+                    <div class="metric-value" id="gen-current-val" style="font-size:1.6rem;">—</div>
+                    <div class="metric-sub" id="gen-current-val-usd">—</div>
+                </div>
+            </div>
+
+            <div class="card" id="gen-profit-card" style="padding:20px;display:flex;align-items:flex-start;gap:14px;">
+                <div class="metric-icon"><i class="fas fa-arrow-trend-up"></i></div>
+                <div>
+                    <div class="metric-label">Rendimiento Neto</div>
+                    <div class="metric-value" id="gen-profit" style="font-size:1.6rem;">—</div>
+                    <div class="metric-sub" id="gen-profit-usd">—</div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Charts Row -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px;" class="chart-grid-general">
+            <div class="card" style="padding:20px;">
+                <div class="section-title" style="margin-bottom:16px;">Distribución de Capital</div>
+                <div style="height:200px;position:relative;"><canvas id="pie-chart-general"></canvas></div>
+            </div>
+            <div class="card" style="padding:20px;">
+                <div class="section-title" style="margin-bottom:16px;">Rendimiento Real del Portafolio (30 días)</div>
+                <div style="height:200px;position:relative;"><canvas id="performance-chart-general"></canvas></div>
+            </div>
+        </div>
+
+        <!-- Table -->
+        <div class="card" style="overflow:hidden;">
+            <div style="padding:16px 20px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;">
+                <div class="section-title">Distribución de Activos</div>
+                <span style="font-size:10px;color:var(--text-muted);font-family:'Syne',sans-serif;letter-spacing:0.05em;">Haz clic en columnas para ordenar</span>
+            </div>
+            <div style="overflow-x:auto;">
+                <table class="data-table" id="general-table">
+                    <thead>
+                        <tr>
+                            <th onclick="sortTable(0)">Activo</th>
+                            <th onclick="sortTable(1)">Cantidad</th>
+                            <th onclick="sortTable(2)">Inversión</th>
+                            <th onclick="sortTable(3)">Valor Actual</th>
+                            <th onclick="sortTable(4)">PnL</th>
+                        </tr>
+                    </thead>
+                    <tbody id="general-table-body"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== ASSET TEMPLATE (hidden) ===== -->
+    <div id="asset-template" style="display:none;">
+        <div style="display:grid;grid-template-columns:1fr 1fr 1.2fr;gap:16px;" class="asset-grid">
+
+            <!-- Campos editables -->
+            <div class="card" style="padding:20px;">
+                <div class="section-title" style="margin-bottom:16px;"><i class="fas fa-pencil-alt" style="font-size:9px;"></i> Campos Editables</div>
+                <div style="display:flex;flex-direction:column;gap:14px;">
+                    <div>
+                        <label class="field-label">Cantidad Total</label>
+                        <input type="number" id="input-qty" readonly>
+                    </div>
+                    <div>
+                        <label class="field-label">Inversión MXN (con comisiones)</label>
+                        <input type="number" step="any" id="input-mxn">
+                    </div>
+                    <div>
+                        <label class="field-label">Inversión USD (histórico)</label>
+                        <input type="number" step="any" id="input-usd">
+                    </div>
+                    <div style="padding-top:8px;border-top:1px solid var(--border);">
+                        <label class="field-label" style="margin-bottom:10px;display:block;">Distribución de Almacenamiento</label>
+                        <div id="dist-casillas-container" class="dist-box" style="display:flex;flex-direction:column;gap:10px;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Métricas calculadas -->
+            <div class="card" style="padding:20px;">
+                <div class="section-title" style="margin-bottom:16px;"><i class="fas fa-calculator" style="font-size:9px;"></i> Métricas</div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;">
+                    <div class="mini-metric">
+                        <div class="mini-label">TC Tu Dólar</div>
+                        <span class="mini-value" id="calc-fx-tuya">—</span>
+                    </div>
+                    <div class="mini-metric">
+                        <div class="mini-label">Entry Prom.</div>
+                        <span class="mini-value" id="calc-entry-usd">—</span>
+                    </div>
+                    <div class="mini-metric">
+                        <div class="mini-label">ROI Actual</div>
+                        <span class="mini-value" id="calc-roi">—</span>
+                    </div>
+                    <div class="mini-metric">
+                        <div class="mini-label">Drawdown 30d</div>
+                        <span class="mini-value" id="calc-drawdown">—</span>
+                    </div>
+                </div>
+                <div class="breakeven-box" style="margin-bottom:16px;">
+                    <div class="be-label">Break-even Real (USD)</div>
+                    <div class="be-value" id="calc-real-break-even">—</div>
+                    <p style="font-size:10px;color:var(--accent-dim);margin-top:6px;line-height:1.5;font-family:'Syne',sans-serif;">
+                        Precio objetivo para absorber pérdida cambiaria.
+                    </p>
+                </div>
+                <div>
+                    <div class="divider-row">
+                        <span class="dr-label">Precio Spot</span>
+                        <span class="dr-value" id="calc-spot-usd">—</span>
+                    </div>
+                    <div class="divider-row">
+                        <span class="dr-label">Valor Posición</span>
+                        <span class="dr-value" id="calc-pos">—</span>
+                    </div>
+                    <div class="divider-row">
+                        <span class="dr-label">Ratio R/B</span>
+                        <span class="dr-value" id="calc-risk-reward">—</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Gráficas -->
+            <div class="card" style="padding:20px;display:flex;flex-direction:column;gap:20px;">
+                <div>
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+                        <div class="section-title">Evolución 30 días</div>
+                        <select id="currency-toggle" style="width:auto;padding:4px 8px;font-size:10px;">
+                            <option value="mxn">MXN</option>
+                            <option value="usd">USD</option>
+                        </select>
+                    </div>
+                    <div class="chart-legend">
+                        <div class="chart-legend-item"><div class="chart-legend-dot" style="background:#c8a97e;"></div>Inversión</div>
+                        <div class="chart-legend-item"><div class="chart-legend-dot" style="background:#7a8a9a;"></div>Spot</div>
+                        <div class="chart-legend-item"><div class="chart-legend-dot dashed" style="color:#e07060;"></div>Entry</div>
+                    </div>
+                    <div class="chart-wrap" style="height:160px;"><canvas id="chart-investment-vs-market"></canvas></div>
+                </div>
+                <div style="border-top:1px solid var(--border);padding-top:16px;">
+                    <div class="section-title" style="margin-bottom:10px;">Break-even vs Spot</div>
+                    <div class="chart-legend">
+                        <div class="chart-legend-item"><div class="chart-legend-dot" style="background:#9a8070;"></div>Spot</div>
+                        <div class="chart-legend-item"><div class="chart-legend-dot dashed" style="color:#c8a97e;"></div>Break-even</div>
+                    </div>
+                    <div class="chart-wrap" style="height:120px;"><canvas id="chart-targets"></canvas></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Asset tabs (filled by JS) -->
+    <div id="tab-btc"  class="tab-content"></div>
+    <div id="tab-link" class="tab-content"></div>
+    <div id="tab-nexo" class="tab-content"></div>
+
+</main>
+
+<!-- ===== GECKO ASISTENTE ===== -->
+<div class="gecko-container" id="geckoContainer">
+    <div class="gecko-bubble" id="geckoBubble">🦎 Toca para ayuda contextual</div>
+    <div class="gecko-avatar" id="geckoAvatar" title="¡Pregúntame!">🦎</div>
+</div>
+
+<!-- Panel del Gecko -->
+<div class="gecko-panel" id="geckoPanel">
+    <div class="gecko-panel-header">
+        <h4><span>🦎</span> Asistente Gecko</h4>
+        <button id="closeGeckoPanel"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="gecko-panel-body" id="geckoPanelBody">
+        <div id="geckoContextMsg" class="gecko-context-msg">
+            <i class="fas fa-lightbulb" style="margin-right:5px;color:var(--accent);"></i>
+            Selecciona una pregunta o haz clic en <strong>"Explicar pantalla"</strong>.
+        </div>
+        <div id="geckoFaqList">
+            <div class="faq-item" data-topic="botones"><i class="fas fa-hand-pointer"></i> ¿Para qué es cada botón?</div>
+            <div class="faq-item" data-topic="roi"><i class="fas fa-percent"></i> ¿Qué es el ROI?</div>
+            <div class="faq-item" data-topic="drawdown"><i class="fas fa-chart-line"></i> ¿Qué es el Drawdown?</div>
+            <div class="faq-item" data-topic="break-even"><i class="fas fa-bullseye"></i> ¿Qué es el Break-even real?</div>
+            <div class="faq-item" data-topic="entry"><i class="fas fa-arrow-right"></i> ¿Qué es el precio de entrada?</div>
+            <div class="faq-item" data-topic="fx"><i class="fas fa-dollar-sign"></i> ¿Qué es TC Tu Dólar?</div>
+            <div class="faq-item" data-topic="risk-reward"><i class="fas fa-balance-scale"></i> ¿Qué es ratio Riesgo/Beneficio?</div>
+            <div class="faq-item" data-topic="pnl"><i class="fas fa-coins"></i> ¿Qué es PnL?</div>
+            <div class="faq-item" data-topic="general"><i class="fas fa-th-large"></i> Explicar pantalla actual</div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+// ========== DATOS ==========
+const portfolioData = {
+    btc: {
+        mxnInv: 408034.085,
+        usdInv: 22570.96,
+        coingeckoId: "bitcoin",
+        symbol: "BTC",
+        qty: 0.2324305,
+        dist: { ledger: 0.16441189, sniper: 0.0051, trend: 0.0051, carroñero: 0.0045, bear: 0.0045, nexo: 0.04876194 }
+    },
+    link: {
+        mxnInv: 188712.387,
+        usdInv: 10748.186,
+        coingeckoId: "chainlink",
+        symbol: "LINK",
+        qty: 1064.14590127,
+        dist: { ledger: 1064.14590127, nexo: 0.0 }
+    },
+    nexo: {
+        mxnInv: 13900.75,
+        usdInv: 798.3,
+        coingeckoId: "nexo",
+        symbol: "NEXO",
+        qty: 845.2643077,
+        dist: { nexo: 845.2643077 }
+    }
+};
+
+const labelMapping = {
+    ledger: "Ledger (Cold Wallet)",
+    sniper: "Bot Sniper",
+    trend: "Bot Trend",
+    carroñero: "Bot Carroñero",
+    bear: "Bot Bear",
+    nexo: "Nexo Account"
+};
+
+let marketPrices = {
+    bitcoin:    { usd: 96500,  mxn: 1737000 },
+    chainlink:  { usd: 11.2,   mxn: 201.6 },
+    nexo:       { usd: 0.95,   mxn: 17.1 }
+};
+let globalFxRate = 18.00;
+let chartsInstances = {};
+let autoSaveTimer = null;
+let historicalPricesCache = {};
+let currentTab = 'general';
+let globalCurrency = 'mxn';
+
+// ========== INICIALIZACIÓN ==========
+window.addEventListener('DOMContentLoaded', () => {
+    // Restore saved data
+    const saved = localStorage.getItem('mi_monitoreo_crypto');
+    if (saved) {
+        try {
+            const parsed = JSON.parse(saved);
+            Object.keys(parsed).forEach(key => {
+                if (portfolioData[key]) {
+                    portfolioData[key].qty   = parsed[key].qty;
+                    portfolioData[key].mxnInv = parsed[key].mxnInv;
+                    portfolioData[key].usdInv = parsed[key].usdInv;
+                    portfolioData[key].dist   = { ...parsed[key].dist };
+                }
+            });
+        } catch(e) { console.warn('Error restoring saved data', e); }
+    }
+
+    const savedCurrency = localStorage.getItem('globalCurrency');
+    if (savedCurrency) {
+        globalCurrency = savedCurrency;
+        document.getElementById('currency-label').innerText = globalCurrency.toUpperCase();
+    }
+
+    // Theme toggle — uses data-theme attribute on <html>
+    const html = document.documentElement;
+    const savedTheme = localStorage.getItem('portfolioTheme') || 'dark';
+    html.setAttribute('data-theme', savedTheme);
+    updateThemeIcon(savedTheme);
+
+    document.getElementById('dark-toggle').addEventListener('click', () => {
+        const current = html.getAttribute('data-theme');
+        const next = current === 'dark' ? 'light' : 'dark';
+        html.setAttribute('data-theme', next);
+        localStorage.setItem('portfolioTheme', next);
+        updateThemeIcon(next);
+        // Redraw charts with correct grid colors
+        setTimeout(() => {
+            updatePieChart();
+            updatePerformanceChart();
+            ['btc', 'link', 'nexo'].forEach(k => updateCalculations(k));
+        }, 150);
+    });
+
+    function updateThemeIcon(theme) {
+        const icon = document.getElementById('dark-icon');
+        if (icon) icon.className = theme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+
+        // Swap mascot: 🦎 gecko en oscuro, 🦊 zorro en diurno
+        const avatar  = document.getElementById('geckoAvatar');
+        const bubble  = document.getElementById('geckoBubble');
+        const panelH4 = document.querySelector('.gecko-panel-header h4');
+
+        if (theme === 'light') {
+            if (avatar)  avatar.innerHTML  = '🦊';
+            if (bubble)  bubble.innerText  = '🦊 Toca para ayuda contextual';
+            if (panelH4) panelH4.innerHTML = '<span>🦊</span> Asistente Zorro';
+        } else {
+            if (avatar)  avatar.innerHTML  = '🦎';
+            if (bubble)  bubble.innerText  = '🦎 Toca para ayuda contextual';
+            if (panelH4) panelH4.innerHTML = '<span>🦎</span> Asistente Gecko';
+        }
+    }
+
+    renderAssetStructures();
+
+    ['btc', 'link', 'nexo'].forEach(key => {
+        fetchHistoricalPrices(portfolioData[key].coingeckoId, 30).then(() => {
+            updateCalculations(key);
+        });
+    });
+    updateGeneralDashboard();
+    fetchMarketData();
+
+    // Currency toggle
+    document.getElementById('global-currency-toggle').addEventListener('click', function() {
+        globalCurrency = globalCurrency === 'mxn' ? 'usd' : 'mxn';
+        localStorage.setItem('globalCurrency', globalCurrency);
+        document.getElementById('currency-label').innerText = globalCurrency.toUpperCase();
+        updateGeneralDashboard();
+        ['btc', 'link', 'nexo'].forEach(key => {
+            updateCalculations(key);
+            const toggleEl = document.getElementById(`currency-toggle-${key}`);
+            if (toggleEl) toggleEl.value = globalCurrency;
+        });
+        updatePieChart();
+        updatePerformanceChart();
+    });
+
+    // Input auto-save
+    document.querySelectorAll('input').forEach(inp => {
+        inp.addEventListener('input', () => {
+            clearTimeout(autoSaveTimer);
+            autoSaveTimer = setTimeout(() => savePortfolioData(), 800);
+        });
+    });
+
+    // Gecko
+    const geckoAvatar = document.getElementById('geckoAvatar');
+    const geckoPanel  = document.getElementById('geckoPanel');
+    const closePanel  = document.getElementById('closeGeckoPanel');
+    const bubble      = document.getElementById('geckoBubble');
+
+    setTimeout(() => bubble.classList.add('show'), 1200);
+    setTimeout(() => bubble.classList.remove('show'), 6000);
+
+    geckoAvatar.addEventListener('click', () => {
+        geckoPanel.classList.toggle('open');
+        if (geckoPanel.classList.contains('open')) updateGeckoContext();
+        bubble.classList.remove('show');
+    });
+    closePanel.addEventListener('click', () => geckoPanel.classList.remove('open'));
+
+    document.addEventListener('click', (e) => {
+        if (!geckoPanel.contains(e.target) && !geckoAvatar.contains(e.target)) {
+            geckoPanel.classList.remove('open');
+        }
+    });
+
+    document.querySelectorAll('.faq-item').forEach(item => {
+        item.addEventListener('click', function() {
+            const topic = this.dataset.topic;
+            if (topic === 'general') showContextExplanation();
+            else showTopicExplanation(topic);
+        });
+    });
+});
+
+// ========== GUARDADO LOCAL ==========
+function savePortfolioData() {
+    localStorage.setItem('mi_monitoreo_crypto', JSON.stringify(portfolioData));
+    const btn = document.getElementById('save-btn');
+    btn.innerHTML = '<i class="fas fa-check"></i> Guardado';
+    btn.classList.add('btn-saved');
+    setTimeout(() => {
+        btn.innerHTML = '<i class="fas fa-save"></i> Guardar';
+        btn.classList.remove('btn-saved');
+    }, 1800);
+}
+
+// ========== GUARDAR HTML CON DATOS EMBEBIDOS ==========
+function saveAsHTML() {
+    // Grab the full current HTML
+    let html = document.documentElement.outerHTML;
+
+    // Build the updated portfolioData literal with current values
+    const newDataBlock = `const portfolioData = ${JSON.stringify(portfolioData, null, 4)};`;
+
+    // Replace the original portfolioData declaration in the source
+    html = html.replace(
+        /const portfolioData = \{[\s\S]*?\};(?=\s*\nconst labelMapping)/,
+        newDataBlock
+    );
+
+    const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement('a');
+    const date = new Date();
+    const stamp = `${date.getFullYear()}${String(date.getMonth()+1).padStart(2,'0')}${String(date.getDate()).padStart(2,'0')}`;
+    a.href     = url;
+    a.download = `Portfolio_Élite_${stamp}.html`;
+    a.click();
+    URL.revokeObjectURL(url);
+
+    // Brief feedback on save button
+    const btn = document.getElementById('save-btn');
+    btn.innerHTML = '<i class="fas fa-check"></i> Guardado';
+    btn.classList.add('btn-saved');
+    setTimeout(() => {
+        btn.innerHTML = '<i class="fas fa-save"></i> Guardar';
+        btn.classList.remove('btn-saved');
+    }, 1800);
+
+    // Also persist to localStorage
+    localStorage.setItem('mi_monitoreo_crypto', JSON.stringify(portfolioData));
+}
+
+// ========== EXPORTAR A EXCEL (XLSX via SheetJS CDN) ==========
+async function exportToExcel() {
+    // Lazy-load SheetJS only when needed
+    if (!window.XLSX) {
+        await new Promise((resolve, reject) => {
+            const s = document.createElement('script');
+            s.src = 'https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js';
+            s.onload = resolve;
+            s.onerror = reject;
+            document.head.appendChild(s);
+        });
+    }
+
+    const wb  = XLSX.utils.book_new();
+    const sym = globalCurrency.toUpperCase();
+    const now = new Date();
+    const stamp = now.toLocaleString('es-MX');
+
+    // ── Hoja 1: Resumen General ─────────────────────────────
+    const summaryRows = [
+        ['Portfolio Élite — Exportado', stamp],
+        [],
+        ['Activo', 'Cantidad', `Inversión ${sym}`, 'Inversión USD', `Valor Actual ${sym}`, 'Valor Actual USD', 'PnL %', `PnL ${sym}`]
+    ];
+
+    let totalInv = 0, totalInvUSD = 0, totalVal = 0, totalValUSD = 0;
+
+    ['btc', 'link', 'nexo'].forEach(key => {
+        const d       = portfolioData[key];
+        const spotUSD = marketPrices[d.coingeckoId]?.usd || 0;
+        const spotMXN = marketPrices[d.coingeckoId]?.mxn || 0;
+        const curMXN  = d.qty * spotMXN;
+        const curUSD  = d.qty * spotUSD;
+        const pnlMXN  = curMXN - d.mxnInv;
+        const pnlPct  = d.mxnInv > 0 ? (pnlMXN / d.mxnInv) * 100 : 0;
+
+        totalInv    += d.mxnInv;
+        totalInvUSD += d.usdInv;
+        totalVal    += curMXN;
+        totalValUSD += curUSD;
+
+        summaryRows.push([
+            d.symbol,
+            d.qty,
+            d.mxnInv,
+            d.usdInv,
+            curMXN,
+            curUSD,
+            parseFloat(pnlPct.toFixed(4)),
+            parseFloat(pnlMXN.toFixed(2))
+        ]);
+    });
+
+    summaryRows.push([]);
+    summaryRows.push([
+        'TOTAL', '',
+        totalInv, totalInvUSD,
+        totalVal, totalValUSD,
+        parseFloat(((totalVal - totalInv) / totalInv * 100).toFixed(4)),
+        parseFloat((totalVal - totalInv).toFixed(2))
+    ]);
+    summaryRows.push([]);
+    summaryRows.push(['TC de Mercado (USD/MXN)', globalFxRate.toFixed(4)]);
+    summaryRows.push(['Fecha exportación', stamp]);
+
+    const ws1 = XLSX.utils.aoa_to_sheet(summaryRows);
+    // Column widths
+    ws1['!cols'] = [14,14,18,14,18,14,10,16].map(w => ({ wch: w }));
+    XLSX.utils.book_append_sheet(wb, ws1, 'Resumen');
+
+    // ── Hoja 2: Métricas por Activo ─────────────────────────
+    const metricRows = [
+        ['Métricas Detalladas', stamp],
+        [],
+        ['Activo', 'Spot USD', 'Spot MXN', 'Entry Prom. USD', 'TC Tu Dólar', 'Break-even Real USD', 'ROI %', 'Valor Posición MXN', 'Valor Posición USD']
+    ];
+
+    ['btc', 'link', 'nexo'].forEach(key => {
+        const d       = portfolioData[key];
+        const spotUSD = marketPrices[d.coingeckoId]?.usd || 0;
+        const spotMXN = marketPrices[d.coingeckoId]?.mxn || 0;
+        const entryUSD  = d.qty > 0 ? d.usdInv / d.qty : 0;
+        const fxTuya    = d.usdInv > 0 ? d.mxnInv / d.usdInv : 0;
+        const realBE    = (d.qty > 0 && globalFxRate > 0) ? d.mxnInv / (d.qty * globalFxRate) : 0;
+        const curMXN    = d.qty * spotMXN;
+        const curUSD    = d.qty * spotUSD;
+        const roi       = d.mxnInv > 0 ? ((curMXN - d.mxnInv) / d.mxnInv * 100) : 0;
+
+        metricRows.push([
+            d.symbol,
+            spotUSD, spotMXN,
+            parseFloat(entryUSD.toFixed(4)),
+            parseFloat(fxTuya.toFixed(4)),
+            parseFloat(realBE.toFixed(4)),
+            parseFloat(roi.toFixed(4)),
+            parseFloat(curMXN.toFixed(2)),
+            parseFloat(curUSD.toFixed(2))
+        ]);
+    });
+
+    const ws2 = XLSX.utils.aoa_to_sheet(metricRows);
+    ws2['!cols'] = [8,12,12,16,12,18,8,18,14].map(w => ({ wch: w }));
+    XLSX.utils.book_append_sheet(wb, ws2, 'Métricas');
+
+    // ── Hoja 3: Distribución por Wallet ─────────────────────
+    const distRows = [
+        ['Distribución de Almacenamiento', stamp],
+        [],
+        ['Activo', 'Wallet / Cuenta', 'Cantidad']
+    ];
+
+    ['btc', 'link', 'nexo'].forEach(key => {
+        const d = portfolioData[key];
+        Object.entries(d.dist).forEach(([wallet, qty]) => {
+            distRows.push([
+                d.symbol,
+                labelMapping[wallet] || wallet,
+                qty
+            ]);
+        });
+        distRows.push([]); // spacer between assets
+    });
+
+    const ws3 = XLSX.utils.aoa_to_sheet(distRows);
+    ws3['!cols'] = [8, 22, 16].map(w => ({ wch: w }));
+    XLSX.utils.book_append_sheet(wb, ws3, 'Distribución');
+
+    // ── Descargar ────────────────────────────────────────────
+    const dateStr = `${now.getFullYear()}${String(now.getMonth()+1).padStart(2,'0')}${String(now.getDate()).padStart(2,'0')}`;
+    XLSX.writeFile(wb, `Portfolio_Élite_${dateStr}.xlsx`);
+}
+
+// ========== PESTAÑAS ==========
+function switchTab(tabId) {
+    currentTab = tabId;
+    document.querySelectorAll('.tab-content').forEach(el => {
+        el.classList.remove('active');
+        el.style.display = 'none';
+    });
+    const el = document.getElementById(`tab-${tabId}`);
+    el.style.display = 'block';
+    setTimeout(() => el.classList.add('active'), 10);
+
+    ['general', 'btc', 'link', 'nexo'].forEach(id => {
+        const btn = document.getElementById(`tab-btn-${id}`);
+        if (btn) btn.classList.toggle('active', id === tabId);
+    });
+
+    if (tabId !== 'general') updateCalculations(tabId);
+    else updateGeneralDashboard();
+
+    if (document.getElementById('geckoPanel').classList.contains('open')) updateGeckoContext();
+}
+
+// ========== RENDERIZADO ACTIVOS ==========
+function renderAssetStructures() {
+    ['btc', 'link', 'nexo'].forEach(assetKey => {
+        const template = document.getElementById('asset-template').innerHTML;
+        const container = document.getElementById(`tab-${assetKey}`);
+
+        let t = template
+            .replace(/id="input-qty"/g, `id="input-qty-${assetKey}"`)
+            .replace(/id="input-mxn"/g, `id="input-mxn-${assetKey}" oninput="updateCalculations('${assetKey}')"`)
+            .replace(/id="input-usd"/g, `id="input-usd-${assetKey}" oninput="updateCalculations('${assetKey}')"`)
+            .replace(/id="dist-casillas-container"/g, `id="dist-casillas-container-${assetKey}"`)
+            .replace(/id="calc-fx-tuya"/g, `id="calc-fx-tuya-${assetKey}"`)
+            .replace(/id="calc-entry-usd"/g, `id="calc-entry-usd-${assetKey}"`)
+            .replace(/id="calc-roi"/g, `id="calc-roi-${assetKey}"`)
+            .replace(/id="calc-drawdown"/g, `id="calc-drawdown-${assetKey}"`)
+            .replace(/id="calc-real-break-even"/g, `id="calc-real-break-even-${assetKey}"`)
+            .replace(/id="calc-spot-usd"/g, `id="calc-spot-usd-${assetKey}"`)
+            .replace(/id="calc-pos"/g, `id="calc-pos-${assetKey}"`)
+            .replace(/id="calc-risk-reward"/g, `id="calc-risk-reward-${assetKey}"`)
+            .replace(/id="chart-investment-vs-market"/g, `id="chart-inv-market-${assetKey}"`)
+            .replace(/id="chart-targets"/g, `id="chart-targets-${assetKey}"`)
+            .replace(/id="currency-toggle"/g, `id="currency-toggle-${assetKey}" onchange="updateCharts('${assetKey}')"`)
+            // add asset header
+            .replace(/<div style="display:flex;flex-direction:column;gap:14px;">/, `
+                <div style="margin-bottom:14px;">
+                    <div style="font-family:'Bebas Neue',sans-serif;font-size:2rem;letter-spacing:0.06em;color:var(--accent);">
+                        ${portfolioData[assetKey].symbol}
+                    </div>
+                    <div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--text-muted);">
+                        ${portfolioData[assetKey].coingeckoId}
+                    </div>
+                </div>
+                <div style="display:flex;flex-direction:column;gap:14px;">`);
+
+        container.innerHTML = t;
+
+        // Fill dist inputs
+        const casillasBox = document.getElementById(`dist-casillas-container-${assetKey}`);
+        if (casillasBox) {
+            casillasBox.innerHTML = '';
+            Object.keys(portfolioData[assetKey].dist).forEach(subKey => {
+                const labelTxt = labelMapping[subKey] || subKey.toUpperCase();
+                casillasBox.innerHTML += `
+                    <div>
+                        <label class="field-label">${labelTxt}</label>
+                        <input type="number" step="any" id="input-sub-${assetKey}-${subKey}"
+                            value="${portfolioData[assetKey].dist[subKey]}"
+                            oninput="updateSubQty('${assetKey}', '${subKey}')">
+                    </div>`;
+            });
+        }
+
+        const mxnEl = document.getElementById(`input-mxn-${assetKey}`);
+        const usdEl = document.getElementById(`input-usd-${assetKey}`);
+        if (mxnEl) mxnEl.value = portfolioData[assetKey].mxnInv;
+        if (usdEl) usdEl.value = portfolioData[assetKey].usdInv;
+        const toggleEl = document.getElementById(`currency-toggle-${assetKey}`);
+        if (toggleEl) toggleEl.value = globalCurrency;
+    });
+}
+
+function updateSubQty(assetKey, subKey) {
+    const inputEl = document.getElementById(`input-sub-${assetKey}-${subKey}`);
+    portfolioData[assetKey].dist[subKey] = parseFloat(inputEl.value) || 0;
+    let total = 0;
+    Object.values(portfolioData[assetKey].dist).forEach(v => total += v);
+    portfolioData[assetKey].qty = total;
+    updateCalculations(assetKey);
+    clearTimeout(autoSaveTimer);
+    autoSaveTimer = setTimeout(() => savePortfolioData(), 500);
+}
+
+// ========== API FETCH ==========
+async function fetchHistoricalPrices(coinId, days = 30) {
+    const cacheKey = `${coinId}_${days}`;
+    if (historicalPricesCache[cacheKey]) return historicalPricesCache[cacheKey];
+    try {
+        const res = await fetch(`https://api.coingecko.com/api/v3/coins/${coinId}/market_chart?vs_currency=usd&days=${days}`);
+        const data = await res.json();
+        // Store full [timestamp, price] pairs so we can extract dates
+        historicalPricesCache[cacheKey] = data.prices; // array of [ts, price]
+        return data.prices;
+    } catch (e) {
+        console.error(`fetchHistoricalPrices ${coinId}:`, e);
+        return null;
+    }
+}
+
+async function fetchMarketData() {
+    const fxEl = document.getElementById('global-fx');
+    fxEl.innerText = '…';
+    try {
+        const res  = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,chainlink,nexo&vs_currencies=usd,mxn');
+        const data = await res.json();
+        if (data.bitcoin && data.chainlink && data.nexo) {
+            marketPrices = data;
+            if (data.bitcoin.mxn && data.bitcoin.usd) {
+                globalFxRate = data.bitcoin.mxn / data.bitcoin.usd;
+            }
+
+            // Update ticker
+            const fmt = (n, d=2) => n >= 10000
+                ? `$${(n/1000).toFixed(1)}k`
+                : `$${n.toLocaleString('en-US', {minimumFractionDigits:d,maximumFractionDigits:d})}`;
+            const fmtMXN = (n) => n >= 10000
+                ? `$${(n/1000).toFixed(1)}k MXN`
+                : `$${n.toLocaleString('es-MX', {maximumFractionDigits:0})} MXN`;
+
+            const tickerMap = [
+                ['btc',  'bitcoin',   2],
+                ['link', 'chainlink', 3],
+                ['nexo', 'nexo',      3]
+            ];
+            tickerMap.forEach(([sym, id, dec]) => {
+                const setText = (elId, text) => {
+                    const el = document.getElementById(elId);
+                    if (!el) return;
+                    el.innerText = text;
+                    el.classList.remove('price-updated');
+                    void el.offsetWidth;
+                    el.classList.add('price-updated');
+                };
+                const usdTxt = `${fmt(data[id].usd, dec)} USD`;
+                const mxnTxt = ` · ${fmtMXN(data[id].mxn)}`;
+                setText(`ticker-${sym}-usd`,   usdTxt);
+                setText(`ticker-${sym}-usd-b`, usdTxt);
+                const mA = document.getElementById(`ticker-${sym}-mxn`);
+                const mB = document.getElementById(`ticker-${sym}-mxn-b`);
+                if (mA) mA.innerText = mxnTxt;
+                if (mB) mB.innerText = mxnTxt;
+            });
+            // FX both sets
+            const fxTxt = globalFxRate.toFixed(2);
+            ['global-fx', 'global-fx-b'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.innerText = fxTxt;
+            });
+
+            // Invalidate cache and refetch
+            historicalPricesCache = {};
+            await Promise.all(['btc', 'link', 'nexo'].map(key =>
+                fetchHistoricalPrices(portfolioData[key].coingeckoId, 30).then(() => updateCalculations(key))
+            ));
+            updateGeneralDashboard();
+            updatePieChart();
+            updatePerformanceChart();
+        }
+    } catch (e) {
+        console.error('fetchMarketData:', e);
+        fxEl.innerText = 'offline';
+    }
+}
+
+// ========== DRAWDOWN ==========
+function calculateDrawdown(prices) {
+    if (!prices || prices.length < 2) return 0;
+    let maxP = prices[0], maxIdx = 0;
+    for (let i = 1; i < prices.length; i++) {
+        if (prices[i] > maxP) { maxP = prices[i]; maxIdx = i; }
+    }
+    const after = prices.slice(maxIdx);
+    const minAfter = Math.min(...after);
+    return ((maxP - minAfter) / maxP) * 100;
+}
+
+// ========== CÁLCULOS POR ACTIVO ==========
+async function updateCalculations(key) {
+    const data  = portfolioData[key];
+    const qty   = data.qty;
+    const qtyEl = document.getElementById(`input-qty-${key}`);
+    if (qtyEl) qtyEl.value = qty;
+
+    const mxnInv = parseFloat(document.getElementById(`input-mxn-${key}`)?.value) || 0;
+    const usdInv = parseFloat(document.getElementById(`input-usd-${key}`)?.value) || 0;
+    data.mxnInv = mxnInv;
+    data.usdInv = usdInv;
+
+    const spotUSD = marketPrices[data.coingeckoId]?.usd || 0;
+    const spotMXN = marketPrices[data.coingeckoId]?.mxn || 0;
+
+    const fxTuya         = usdInv > 0 ? (mxnInv / usdInv) : 0;
+    const entryUSD       = qty > 0 ? (usdInv / qty) : 0;
+    const realBE         = (qty > 0 && globalFxRate > 0) ? (mxnInv / (qty * globalFxRate)) : 0;
+    const currentPosMXN  = qty * spotMXN;
+    const currentPosUSD  = qty * spotUSD;
+    const roi            = mxnInv > 0 ? ((currentPosMXN - mxnInv) / mxnInv * 100) : 0;
+    const riskReward     = spotUSD > 0 && entryUSD > 0 ? (realBE - entryUSD) / Math.max(entryUSD - spotUSD, 0.0001) : 1;
+
+    const rawPairs = await fetchHistoricalPrices(data.coingeckoId, 30);
+    let drawdown = null;
+    let histPrices = null;
+    let histTimestamps = null;
+
+    if (rawPairs && rawPairs.length > 0) {
+        histPrices     = rawPairs.map(p => p[1]);
+        histTimestamps = rawPairs.map(p => p[0]);
+        drawdown       = calculateDrawdown(histPrices);
+    }
+
+    // Update DOM
+    const setText = (id, val) => { const el = document.getElementById(id); if (el) el.innerText = val; };
+
+    setText(`calc-fx-tuya-${key}`,    `$${fxTuya.toFixed(2)} MXN`);
+    setText(`calc-entry-usd-${key}`,  `$${entryUSD.toFixed(2)}`);
+    setText(`calc-real-break-even-${key}`, `$${realBE.toFixed(4)}`);
+    setText(`calc-spot-usd-${key}`,   `$${spotUSD.toFixed(2)} USD`);
+    setText(`calc-risk-reward-${key}`, riskReward.toFixed(2));
+
+    const roiEl = document.getElementById(`calc-roi-${key}`);
+    if (roiEl) {
+        roiEl.innerText = `${roi >= 0 ? '+' : ''}${roi.toFixed(2)}%`;
+        roiEl.style.color = roi >= 0 ? 'var(--green)' : '#e07060';
+    }
+
+    const ddEl = document.getElementById(`calc-drawdown-${key}`);
+    if (ddEl) ddEl.innerText = drawdown !== null ? `-${drawdown.toFixed(2)}%` : 'N/A';
+
+    const posEl = document.getElementById(`calc-pos-${key}`);
+    if (posEl) posEl.innerText = globalCurrency === 'mxn'
+        ? `$${currentPosMXN.toLocaleString('es-MX', { minimumFractionDigits:2, maximumFractionDigits:2 })} MXN`
+        : `$${currentPosUSD.toLocaleString('en-US', { minimumFractionDigits:2, maximumFractionDigits:2 })} USD`;
+
+    const toggleEl   = document.getElementById(`currency-toggle-${key}`);
+    const currMode   = toggleEl ? toggleEl.value : globalCurrency;
+    const fallback   = generateFallbackPrices(spotUSD, 30);
+    const prices     = histPrices || fallback;
+    const timestamps = histTimestamps || Array.from({length:30}, (_, i) => Date.now() - (29 - i) * 86400000);
+
+    initOrUpdateCharts(key, prices, timestamps, entryUSD, realBE, currMode);
+    updateGeneralDashboard();
+}
+
+function generateFallbackPrices(price, days) {
+    const arr = [price];
+    for (let i = 1; i < days; i++) {
+        const delta = (Math.random() - 0.5) * 0.03 * arr[i-1];
+        arr.push(Math.max(arr[i-1] + delta, price * 0.5));
+    }
+    return arr;
+}
+
+// ========== TOOLTIP EXTERNO CUSTOM ==========
+// Un único div flotante reutilizable por todos los charts
+function getOrCreateTooltipEl(chartId) {
+    let el = document.getElementById(`tt-${chartId}`);
+    if (!el) {
+        el = document.createElement('div');
+        el.id = `tt-${chartId}`;
+        el.style.cssText = `
+            position: absolute;
+            pointer-events: none;
+            z-index: 9990;
+            transition: opacity 0.15s ease, transform 0.1s ease;
+            opacity: 0;
+            font-family: 'DM Mono', monospace;
+            font-size: 11px;
+            line-height: 1.55;
+            white-space: nowrap;
+            border-radius: 4px;
+            padding: 8px 11px;
+            border: 1px solid;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            min-width: 130px;
+        `;
+        // Append to the canvas parent so position:absolute works relative to it
+        const canvas = document.getElementById(chartId);
+        if (canvas && canvas.parentElement) {
+            canvas.parentElement.style.position = 'relative';
+            canvas.parentElement.appendChild(el);
+        }
+    }
+    return el;
+}
+
+function applyTooltipTheme(el) {
+    const isDark = document.documentElement.getAttribute('data-theme') !== 'light';
+    if (isDark) {
+        el.style.background    = 'rgba(16,16,18,0.78)';
+        el.style.borderColor   = '#3a3a3f';
+        el.style.color         = '#e8e6e1';
+        el.style.boxShadow     = '0 4px 20px rgba(0,0,0,0.5)';
+    } else {
+        el.style.background    = 'rgba(245,242,237,0.84)';
+        el.style.borderColor   = '#c0b8ae';
+        el.style.color         = '#2a2620';
+        el.style.boxShadow     = '0 4px 20px rgba(0,0,0,0.12)';
+    }
+}
+
+function positionTooltip(el, chart, tooltipModel) {
+    const canvas   = chart.canvas;
+    const rect     = canvas.getBoundingClientRect();
+    const parent   = canvas.parentElement;
+    const pRect    = parent.getBoundingClientRect();
+
+    // Cursor x relative to the parent container
+    const x = tooltipModel.caretX;
+    const y = tooltipModel.caretY;
+    const ttW = el.offsetWidth  || 140;
+    const ttH = el.offsetHeight || 70;
+    const pW  = parent.offsetWidth;
+
+    // Flip left if tooltip would overflow right edge
+    let left = x + 10;
+    if (left + ttW > pW - 4) left = x - ttW - 10;
+
+    // Vertical: center on caret, clamp inside parent
+    let top = y - ttH / 2;
+    if (top < 4) top = 4;
+
+    el.style.left = `${left}px`;
+    el.style.top  = `${top}px`;
+}
+
+// Crosshair plugin — shared vertical line
+const crosshairPlugin = {
+    id: 'crosshair',
+    afterDraw(chart) {
+        if (!chart._crosshairX) return;
+        const { ctx, chartArea: { top, bottom } } = chart;
+        const isDark = document.documentElement.getAttribute('data-theme') !== 'light';
+        ctx.save();
+        ctx.beginPath();
+        ctx.moveTo(chart._crosshairX, top);
+        ctx.lineTo(chart._crosshairX, bottom);
+        ctx.strokeStyle = isDark ? 'rgba(200,169,126,0.3)' : 'rgba(154,111,58,0.25)';
+        ctx.lineWidth   = 1;
+        ctx.setLineDash([3, 3]);
+        ctx.stroke();
+        ctx.restore();
+    }
+};
+Chart.register(crosshairPlugin);
+
+// Builder for external tooltip handler
+const tooltipTimers = {};
+function makeExternalTooltip(chartId, buildHtml) {
+    return function(context) {
+        const { chart, tooltip } = context;
+        const el = getOrCreateTooltipEl(chartId);
+
+        if (tooltip.opacity === 0) {
+            el.style.opacity = '0';
+            chart._crosshairX = null;
+            chart.draw();
+            return;
+        }
+
+        applyTooltipTheme(el);
+
+        // Draw crosshair
+        chart._crosshairX = tooltip.caretX;
+        chart.draw();
+
+        el.innerHTML = buildHtml(tooltip);
+        el.style.opacity = '1';
+        positionTooltip(el, chart, tooltip);
+
+        // Inactivity fade: disappear after 5s of no mouse movement on chart
+        clearTimeout(tooltipTimers[chartId]);
+        tooltipTimers[chartId] = setTimeout(() => {
+            el.style.opacity = '0';
+            chart._crosshairX = null;
+            chart.draw();
+        }, 5000);
+    };
+}
+
+// ========== GRÁFICOS POR ACTIVO — DUAL Y-AXIS ==========
+function initOrUpdateCharts(key, histPrices, histTimestamps, entryUSD, realBE, currencyMode) {
+    if (typeof Chart === 'undefined') return;
+
+    const isDark     = document.documentElement.getAttribute('data-theme') !== 'light';
+    const gridColor  = isDark ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.06)';
+    const tickColor  = isDark ? '#5a5755' : '#8a8078';
+    const labelFont  = { family: 'DM Mono', size: 10 };
+    const accentMuted = isDark ? '#7a6548' : '#9a6f3a';
+
+    // Resample to ~30 points
+    const step       = Math.max(1, Math.floor(histPrices.length / 30));
+    const sampled    = histPrices.filter((_, i) => i % step === 0).slice(-30);
+    const sampledTs  = histTimestamps.filter((_, i) => i % step === 0).slice(-30);
+    const dateLabels = sampledTs.map(ts => {
+        const d = new Date(ts);
+        return `${d.getDate()}/${d.getMonth()+1}`;
+    });
+
+    const qty        = portfolioData[key].qty;
+    const histValues = sampled.map(p => qty * p);
+    const histMXNVal = sampled.map(p => qty * p * globalFxRate);
+    const entryLine    = Array(sampled.length).fill(entryUSD);
+    const entryMXNLine = Array(sampled.length).fill(entryUSD * globalFxRate);
+
+    const isM      = currencyMode === 'mxn';
+    const invData  = isM ? histMXNVal : histValues;
+    const spotData = isM ? sampled.map(p => p * globalFxRate) : sampled;
+    const entryData = isM ? entryMXNLine : entryLine;
+    const labelC   = currencyMode.toUpperCase();
+    const sym      = currencyMode === 'mxn' ? 'MXN' : 'USD';
+
+    const fmtPrice = v => v >= 10000
+        ? `$${(v/1000).toFixed(1)}k ${sym}`
+        : `$${v.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2})} ${sym}`;
+
+    const ctxInvId  = `chart-inv-market-${key}`;
+    const canvasInv = document.getElementById(ctxInvId);
+    if (!canvasInv) return;
+    if (chartsInstances[ctxInvId]) chartsInstances[ctxInvId].destroy();
+
+    chartsInstances[ctxInvId] = new Chart(canvasInv, {
+        type: 'line',
+        data: {
+            labels: dateLabels,
+            datasets: [
+                {
+                    label: `Posición`,
+                    data: invData,
+                    borderColor: '#c8a97e',
+                    backgroundColor: 'rgba(200,169,126,0.07)',
+                    fill: true,
+                    tension: 0.3,
+                    pointRadius: 0,
+                    borderWidth: 1.5,
+                    yAxisID: 'yLeft'
+                },
+                {
+                    label: `Spot`,
+                    data: spotData,
+                    borderColor: '#7a8a9a',
+                    borderWidth: 1.5,
+                    tension: 0.3,
+                    pointRadius: 0,
+                    yAxisID: 'yRight'
+                },
+                {
+                    label: `Entry`,
+                    data: entryData,
+                    borderColor: '#e07060',
+                    borderDash: [4, 4],
+                    borderWidth: 1.5,
+                    pointRadius: 0,
+                    yAxisID: 'yRight'
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            interaction: { mode: 'index', intersect: false },
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    enabled: false,
+                    external: makeExternalTooltip(ctxInvId, (tt) => {
+                        const date  = tt.title?.[0] ?? '';
+                        const posV  = tt.dataPoints?.[0]?.raw ?? 0;
+                        const spotV = tt.dataPoints?.[1]?.raw ?? 0;
+                        const entV  = tt.dataPoints?.[2]?.raw ?? 0;
+                        const pnlV  = posV - (isM
+                            ? portfolioData[key].mxnInv
+                            : portfolioData[key].usdInv);
+                        const pnlSign = pnlV >= 0 ? '+' : '';
+                        const pnlColor = pnlV >= 0 ? '#7fbf95' : '#e07060';
+                        const isDk = document.documentElement.getAttribute('data-theme') !== 'light';
+                        const sep  = `<div style="height:1px;background:${isDk?'rgba(255,255,255,0.06)':'rgba(0,0,0,0.07)'};margin:5px 0;"></div>`;
+                        return `
+                            <div style="color:${isDk?'#7a6548':'#9a6f3a'};font-size:10px;margin-bottom:4px;letter-spacing:0.08em;">${date}</div>
+                            <div><span style="color:#c8a97e;">● Posición</span> ${fmtPrice(posV)}</div>
+                            <div style="color:${pnlColor};font-size:10px;">  PnL ${pnlSign}${fmtPrice(Math.abs(pnlV))}</div>
+                            ${sep}
+                            <div><span style="color:#7a8a9a;">● Spot</span>     ${fmtPrice(spotV)}</div>
+                            <div><span style="color:#e07060;">● Entry</span>    ${fmtPrice(entV)}</div>
+                        `;
+                    })
+                }
+            },
+            scales: {
+                x: {
+                    grid: { color: gridColor },
+                    ticks: { color: tickColor, font: labelFont, maxTicksLimit: 6 }
+                },
+                yLeft: {
+                    position: 'left',
+                    grid: { color: gridColor },
+                    ticks: { color: '#c8a97e', font: labelFont, maxTicksLimit: 4,
+                        callback: v => v >= 1000 ? `$${(v/1000).toFixed(0)}k` : `$${v.toFixed(0)}`
+                    }
+                },
+                yRight: {
+                    position: 'right',
+                    grid: { drawOnChartArea: false },
+                    ticks: { color: '#7a8a9a', font: labelFont, maxTicksLimit: 4,
+                        callback: v => v >= 1000 ? `$${(v/1000).toFixed(0)}k` : `$${v.toFixed(0)}`
+                    }
+                }
+            }
+        }
+    });
+
+    // ── Break-even vs Spot ──────────────────────────────────
+    const ctxTgtId  = `chart-targets-${key}`;
+    const canvasTgt = document.getElementById(ctxTgtId);
+    if (!canvasTgt) return;
+    if (chartsInstances[ctxTgtId]) chartsInstances[ctxTgtId].destroy();
+
+    const beLine    = Array(sampled.length).fill(realBE);
+    const beMXNLine = Array(sampled.length).fill(realBE * globalFxRate);
+    const beData    = isM ? beMXNLine : beLine;
+    const spotForBE = isM ? sampled.map(p => p * globalFxRate) : sampled;
+    const beRef     = isM ? realBE * globalFxRate : realBE;
+
+    chartsInstances[ctxTgtId] = new Chart(canvasTgt, {
+        type: 'line',
+        data: {
+            labels: dateLabels,
+            datasets: [
+                {
+                    label: `Spot`,
+                    data: spotForBE,
+                    borderColor: '#9a8070',
+                    borderWidth: 1.5,
+                    tension: 0.3,
+                    pointRadius: 0
+                },
+                {
+                    label: `Break-even`,
+                    data: beData,
+                    borderColor: '#c8a97e',
+                    borderDash: [4, 4],
+                    borderWidth: 1.5,
+                    pointRadius: 0
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            interaction: { mode: 'index', intersect: false },
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    enabled: false,
+                    external: makeExternalTooltip(ctxTgtId, (tt) => {
+                        const date   = tt.title?.[0] ?? '';
+                        const spotV  = tt.dataPoints?.[0]?.raw ?? 0;
+                        const beV    = tt.dataPoints?.[1]?.raw ?? beRef;
+                        const diff   = spotV - beV;
+                        const aboveB = diff >= 0;
+                        const diffColor = aboveB ? '#7fbf95' : '#e07060';
+                        const arrow  = aboveB ? '↑' : '↓';
+                        const isDk   = document.documentElement.getAttribute('data-theme') !== 'light';
+                        const sep    = `<div style="height:1px;background:${isDk?'rgba(255,255,255,0.06)':'rgba(0,0,0,0.07)'};margin:5px 0;"></div>`;
+                        return `
+                            <div style="color:${isDk?'#7a6548':'#9a6f3a'};font-size:10px;margin-bottom:4px;letter-spacing:0.08em;">${date}</div>
+                            <div><span style="color:#9a8070;">● Spot</span>       ${fmtPrice(spotV)}</div>
+                            <div><span style="color:#c8a97e;">⋯ Break-even</span> ${fmtPrice(beV)}</div>
+                            ${sep}
+                            <div style="color:${diffColor};">${arrow} ${aboveB ? 'Por encima' : 'Faltan'} ${fmtPrice(Math.abs(diff))}</div>
+                        `;
+                    })
+                }
+            },
+            scales: {
+                x: { grid: { color: gridColor }, ticks: { color: tickColor, font: labelFont, maxTicksLimit: 5 } },
+                y: { grid: { color: gridColor }, ticks: { color: tickColor, font: labelFont, maxTicksLimit: 4,
+                    callback: v => v >= 1000 ? `$${(v/1000).toFixed(0)}k` : `$${v.toFixed(0)}`
+                }}
+            }
+        }
+    });
+}
+
+function updateCharts(key) { updateCalculations(key); }
+
+// ========== GRÁFICO GENERAL — DOUGHNUT ==========
+function updatePieChart() {
+    const ctx = document.getElementById('pie-chart-general');
+    if (!ctx) return;
+    if (window.pieChart) window.pieChart.destroy();
+
+    const data = globalCurrency === 'mxn'
+        ? [portfolioData.btc.mxnInv, portfolioData.link.mxnInv, portfolioData.nexo.mxnInv]
+        : [portfolioData.btc.usdInv, portfolioData.link.usdInv, portfolioData.nexo.usdInv];
+
+    const isDark = document.documentElement.getAttribute('data-theme') !== 'light';
+    const labelColor = isDark ? '#9a9590' : '#8a8078';
+    const labelFont  = { family: 'DM Mono', size: 11 };
+
+    window.pieChart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: ['BTC', 'LINK', 'NEXO'],
+            datasets: [{
+                data,
+                backgroundColor: ['#c8a97e', '#6a7a8a', '#4a5a4a'],
+                borderWidth: 0,
+                hoverOffset: 6
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        boxWidth: 10, padding: 16, color: labelColor, font: labelFont
+                    }
+                },
+                tooltip: {
+                    backgroundColor: 'rgba(20,20,22,0.92)',
+                    titleColor: '#9a9590',
+                    bodyColor: '#e8e6e1',
+                    borderColor: '#2a2a2e',
+                    borderWidth: 1,
+                    titleFont: labelFont,
+                    bodyFont: labelFont,
+                    callbacks: {
+                        label: (ctx) => {
+                            const val = ctx.raw;
+                            const sym = globalCurrency.toUpperCase();
+                            return ` ${ctx.label}: $${val.toLocaleString('es-MX', {maximumFractionDigits:0})} ${sym}`;
+                        }
+                    }
+                }
+            },
+            cutout: '68%'
+        }
+    });
+}
+
+// ========== GRÁFICO GENERAL — RENDIMIENTO REAL ==========
+async function updatePerformanceChart() {
+    const ctx = document.getElementById('performance-chart-general');
+    if (!ctx) return;
+    if (window.perfChart) window.perfChart.destroy();
+
+    const [btcPairs, linkPairs, nexoPairs] = await Promise.all([
+        fetchHistoricalPrices('bitcoin',   30),
+        fetchHistoricalPrices('chainlink', 30),
+        fetchHistoricalPrices('nexo',      30)
+    ]);
+    if (!btcPairs || !linkPairs || !nexoPairs) return;
+
+    const step  = Math.max(1, Math.floor(btcPairs.length / 30));
+    const btcS  = btcPairs.filter((_,i)  => i % step === 0).slice(-30);
+    const linkS = linkPairs.filter((_,i) => i % step === 0).slice(-30);
+    const nexoS = nexoPairs.filter((_,i) => i % step === 0).slice(-30);
+    const n     = Math.min(btcS.length, linkS.length, nexoS.length);
+
+    const dateLabels = btcS.slice(-n).map(p => {
+        const d = new Date(p[0]);
+        return `${d.getDate()}/${d.getMonth()+1}`;
+    });
+
+    const totalInvUSD = portfolioData.btc.usdInv + portfolioData.link.usdInv + portfolioData.nexo.usdInv;
+
+    const totalValues = [];
+    for (let i = 0; i < n; i++) {
+        totalValues.push(
+            portfolioData.btc.qty  * btcS[i][1]  +
+            portfolioData.link.qty * linkS[i][1] +
+            portfolioData.nexo.qty * nexoS[i][1]
+        );
+    }
+    const pctValues = totalValues.map(v => ((v - totalInvUSD) / totalInvUSD) * 100);
+
+    const isDark    = document.documentElement.getAttribute('data-theme') !== 'light';
+    const gridColor = isDark ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.06)';
+    const tickColor = isDark ? '#5a5755' : '#8a8078';
+    const labelFont = { family: 'DM Mono', size: 10 };
+    const zeroLine  = isDark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.10)';
+
+    const netPositive = pctValues[pctValues.length - 1] >= 0;
+    const lineColor   = netPositive ? '#4e7a5e' : '#c0392b';
+    const fillColor   = netPositive ? 'rgba(78,122,94,0.08)' : 'rgba(192,57,43,0.08)';
+
+    const perfChartId = 'performance-chart-general';
+
+    window.perfChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: dateLabels,
+            datasets: [
+                {
+                    label: 'Rendimiento',
+                    data: pctValues,
+                    borderColor: lineColor,
+                    backgroundColor: fillColor,
+                    fill: true,
+                    tension: 0.35,
+                    pointRadius: 0,
+                    borderWidth: 1.5
+                },
+                {
+                    label: '__zero__',
+                    data: Array(n).fill(0),
+                    borderColor: zeroLine,
+                    borderDash: [4, 4],
+                    borderWidth: 1,
+                    pointRadius: 0
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            interaction: { mode: 'index', intersect: false },
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    enabled: false,
+                    external: makeExternalTooltip(perfChartId, (tt) => {
+                        const date   = tt.title?.[0] ?? '';
+                        const pct    = tt.dataPoints?.[0]?.raw ?? 0;
+                        // Absolute USD value at that point
+                        const idx    = tt.dataPoints?.[0]?.dataIndex ?? 0;
+                        const absVal = totalValues[idx] ?? 0;
+                        const pnlUSD = absVal - totalInvUSD;
+                        const pos    = pct >= 0;
+                        const color  = pos ? '#7fbf95' : '#e07060';
+                        const arrow  = pos ? '▲' : '▼';
+                        const isDk   = document.documentElement.getAttribute('data-theme') !== 'light';
+                        const sep    = `<div style="height:1px;background:${isDk?'rgba(255,255,255,0.06)':'rgba(0,0,0,0.07)'};margin:5px 0;"></div>`;
+                        const fmtUSD = v => `$${Math.abs(v).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})} USD`;
+                        return `
+                            <div style="color:${isDk?'#7a6548':'#9a6f3a'};font-size:10px;margin-bottom:4px;letter-spacing:0.08em;">${date}</div>
+                            <div style="color:${color};font-size:13px;font-weight:600;">${arrow} ${pos?'+':''}${pct.toFixed(2)}%</div>
+                            ${sep}
+                            <div style="color:${isDk?'#9a9590':'#5a534a'};font-size:10px;">Portafolio</div>
+                            <div>${fmtUSD(absVal)}</div>
+                            <div style="color:${color};font-size:10px;">PnL ${pos?'+':'−'}${fmtUSD(pnlUSD)}</div>
+                        `;
+                    })
+                }
+            },
+            scales: {
+                x: { grid: { color: gridColor }, ticks: { color: tickColor, font: labelFont, maxTicksLimit: 6 } },
+                y: {
+                    grid: { color: gridColor },
+                    ticks: {
+                        color: tickColor, font: labelFont, maxTicksLimit: 5,
+                        callback: v => `${v >= 0 ? '+' : ''}${v.toFixed(1)}%`
+                    }
+                }
+            }
+        }
+    });
+}
+
+// ========== DASHBOARD GENERAL ==========
+function updateGeneralDashboard() {
+    let totalInv = 0, totalInvUSD = 0, totalCurrent = 0, totalCurrentUSD = 0;
+    const tbody = document.getElementById('general-table-body');
+    if (!tbody) return;
+    tbody.innerHTML = '';
+
+    ['btc', 'link', 'nexo'].forEach(key => {
+        const data    = portfolioData[key];
+        const spotUSD = marketPrices[data.coingeckoId]?.usd || 0;
+        const spotMXN = marketPrices[data.coingeckoId]?.mxn || 0;
+        const curMXN  = data.qty * spotMXN;
+        const curUSD  = data.qty * spotUSD;
+
+        totalInv        += data.mxnInv;
+        totalInvUSD     += data.usdInv;
+        totalCurrent    += curMXN;
+        totalCurrentUSD += curUSD;
+
+        const pnlMXN  = curMXN - data.mxnInv;
+        const pnlPct  = data.mxnInv > 0 ? (pnlMXN / data.mxnInv) * 100 : 0;
+        const pos     = pnlPct >= 0;
+        const barW    = Math.min(Math.abs(pnlPct), 100);
+
+        const invDisp = globalCurrency === 'mxn'
+            ? `$${data.mxnInv.toLocaleString('es-MX', {maximumFractionDigits:2})} MXN`
+            : `$${data.usdInv.toLocaleString('en-US', {maximumFractionDigits:2})} USD`;
+        const valDisp = globalCurrency === 'mxn'
+            ? `$${curMXN.toLocaleString('es-MX', {maximumFractionDigits:2})} MXN`
+            : `$${curUSD.toLocaleString('en-US', {maximumFractionDigits:2})} USD`;
+
+        tbody.innerHTML += `
+            <tr>
+                <td>${data.symbol}</td>
+                <td><span class="qty">${data.qty.toFixed(6)}</span></td>
+                <td style="font-family:'DM Mono',monospace;font-size:12px;">${invDisp}</td>
+                <td style="font-family:'DM Mono',monospace;font-size:12px;color:var(--text-primary);">${valDisp}</td>
+                <td>
+                    <div style="display:flex;align-items:center;gap:8px;">
+                        <span class="${pos ? 'pnl-pos' : 'pnl-neg'}">${pos ? '+' : ''}${pnlPct.toFixed(2)}%</span>
+                        <div class="progress-track">
+                            <div class="${pos ? 'progress-fill-pos' : 'progress-fill-neg'}" style="width:${barW}%;"></div>
+                        </div>
+                    </div>
+                </td>
+            </tr>`;
+    });
+
+    const totalProfit    = totalCurrent - totalInv;
+    const totalProfitUSD = totalCurrentUSD - totalInvUSD;
+    const isPos          = totalProfit >= 0;
+
+    const fmtMXN = v => `$${v.toLocaleString('es-MX', {minimumFractionDigits:2})} MXN`;
+    const fmtUSD = v => `$${v.toLocaleString('en-US', {minimumFractionDigits:2})} USD`;
+
+    const totalInvDisp  = globalCurrency === 'mxn' ? fmtMXN(totalInv)     : fmtUSD(totalInvUSD);
+    const totalCurDisp  = globalCurrency === 'mxn' ? fmtMXN(totalCurrent) : fmtUSD(totalCurrentUSD);
+    const totalProfDisp = globalCurrency === 'mxn' ? fmtMXN(totalProfit)  : fmtUSD(totalProfitUSD);
+
+    document.getElementById('gen-total-inv').innerText    = totalInvDisp;
+    document.getElementById('gen-total-inv-usd').innerText= fmtUSD(totalInvUSD);
+    document.getElementById('gen-current-val').innerText  = totalCurDisp;
+    document.getElementById('gen-current-val-usd').innerText = fmtUSD(totalCurrentUSD);
+
+    const profitEl  = document.getElementById('gen-profit');
+    const profitSub = document.getElementById('gen-profit-usd');
+    const profitCard = document.getElementById('gen-profit-card');
+    profitEl.innerText  = totalProfDisp;
+    profitSub.innerText = fmtUSD(totalProfitUSD);
+
+    if (isPos) {
+        profitCard.classList.add('profit-card-pos');
+        profitCard.classList.remove('profit-card-neg');
+        profitEl.classList.add('profit-val-pos');
+        profitEl.classList.remove('profit-val-neg');
+    } else {
+        profitCard.classList.add('profit-card-neg');
+        profitCard.classList.remove('profit-card-pos');
+        profitEl.classList.add('profit-val-neg');
+        profitEl.classList.remove('profit-val-pos');
+    }
+
+    updatePieChart();
+    updatePerformanceChart();
+}
+
+// ========== ORDENAMIENTO ==========
+let sortDir = 1, lastCol = -1;
+function sortTable(col) {
+    const tbody = document.querySelector('#general-table tbody');
+    const rows  = Array.from(tbody.querySelectorAll('tr'));
+    if (lastCol === col) sortDir *= -1; else { sortDir = 1; lastCol = col; }
+    rows.sort((a, b) => {
+        const at = a.children[col].innerText.trim();
+        const bt = b.children[col].innerText.trim();
+        const an = parseFloat(at.replace(/[^0-9.-]/g, ''));
+        const bn = parseFloat(bt.replace(/[^0-9.-]/g, ''));
+        if (!isNaN(an) && !isNaN(bn)) return (an - bn) * sortDir;
+        return at.localeCompare(bt) * sortDir;
+    });
+    rows.forEach(r => tbody.appendChild(r));
+}
+
+// ========== GECKO EXPLICACIONES ==========
+function updateGeckoContext() {
+    const msg = document.getElementById('geckoContextMsg');
+    if (currentTab === 'general') {
+        msg.innerHTML = `<i class="fas fa-th-large" style="margin-right:5px;color:var(--accent);"></i>
+            <strong>Vista General</strong><br>
+            Resumen del portafolio: inversión total, valor actual, rendimiento neto,
+            distribución de capital en gráfico de pastel y evolución <em>real</em> del rendimiento (datos CoinGecko).
+            <br><small style="color:var(--text-muted);">Haz clic en "Explicar pantalla" para más detalles.</small>`;
+    } else {
+        const sym = currentTab.toUpperCase();
+        msg.innerHTML = `<i class="fas fa-coins" style="margin-right:5px;color:var(--accent);"></i>
+            <strong>Vista ${sym}</strong><br>
+            Métricas detalladas: inversión, ROI, drawdown (30 días), break-even real y gráficos históricos con datos reales.
+            <br><small style="color:var(--text-muted);">Selecciona una pregunta abajo.</small>`;
+    }
+}
+
+function showContextExplanation() {
+    const msg = document.getElementById('geckoContextMsg');
+    if (currentTab === 'general') {
+        msg.innerHTML = `<i class="fas fa-th-large" style="margin-right:5px;color:var(--accent);"></i>
+            <strong>Pantalla General</strong><br>
+            • <strong>Tarjetas</strong>: Inversión total, valor actual y rendimiento neto.<br>
+            • <strong>Doughnut</strong>: % de capital por activo.<br>
+            • <strong>Rendimiento real</strong>: Calculado con precios históricos de CoinGecko vs tu inversión en USD.<br>
+            • <strong>Tabla</strong>: Detalle por activo, ordenable por columna.<br>
+            <small style="color:var(--text-muted);">Haz clic en cualquier cabecera de columna para ordenar.</small>`;
+    } else {
+        const sym  = currentTab.toUpperCase();
+        const roiEl = document.getElementById(`calc-roi-${currentTab}`);
+        const ddEl  = document.getElementById(`calc-drawdown-${currentTab}`);
+        msg.innerHTML = `<i class="fas fa-coins" style="margin-right:5px;color:var(--accent);"></i>
+            <strong>Vista ${sym}</strong><br>
+            • <strong>ROI</strong>: ${roiEl?.innerText || 'N/A'} — Rendimiento sobre inversión MXN.<br>
+            • <strong>Drawdown</strong>: ${ddEl?.innerText || 'N/A'} — Caída máxima en 30 días.<br>
+            • <strong>Break-even real</strong>: Precio para cubrir pérdida cambiaria.<br>
+            • <strong>Gráfico superior</strong>: Dual-eje — valor de posición (bronce) vs precio spot (gris) y entry (rojo).<br>
+            • <strong>Gráfico inferior</strong>: Break-even vs precio spot histórico.<br>
+            <small style="color:var(--text-muted);">Cambia MXN/USD con el selector.</small>`;
+    }
+}
+
+function showTopicExplanation(topic) {
+    const msg = document.getElementById('geckoContextMsg');
+    const map = {
+        botones: `<i class="fas fa-hand-pointer" style="color:var(--accent);margin-right:5px;"></i> <strong>¿Para qué es cada botón?</strong><br><br>
+            <strong>MXN / USD</strong> — Cambia la moneda de visualización en todo el portafolio.<br><br>
+            <strong>Guardar</strong> — Guarda tus datos en este navegador y dispositivo. Si borras el caché, se pierden.<br><br>
+            <strong>HTML</strong> — Descarga el portafolio completo como archivo con tus datos actuales ya embebidos. Úsalo para:<br>
+            &nbsp;• Cambiar de teléfono o ver en la PC<br>
+            &nbsp;• Tener un respaldo antes de borrar caché<br>
+            &nbsp;• Compartir el portafolio en otro dispositivo<br>
+            Cada descarga es una fotografía actualizada. Reemplaza el archivo anterior con el nuevo.<br><br>
+            <strong>Excel</strong> — Exporta todas las métricas calculadas a un archivo .xlsx con 3 hojas: Resumen, Métricas detalladas y Distribución por wallet.<br><br>
+            <strong>☀/☾</strong> — Cambia entre modo oscuro (Gecko 🦎) y modo diurno (Zorro 🦊).<br><br>
+            <strong>Actualizar</strong> — Consulta precios en tiempo real desde CoinGecko y recalcula todo.`,
+        roi: `<i class="fas fa-percent" style="color:var(--accent);margin-right:5px;"></i> <strong>ROI</strong><br>
+            (Valor actual − Inversión) / Inversión × 100<br>
+            <strong>Ej:</strong> Inviertes $100, vale $110 → ROI = +10%. Positivo = ganancia.`,
+        drawdown: `<i class="fas fa-chart-line" style="color:var(--accent);margin-right:5px;"></i> <strong>Drawdown</strong><br>
+            Caída máxima desde el pico en los últimos 30 días, calculada con datos reales de CoinGecko.<br>
+            Mayor drawdown = mayor volatilidad y riesgo.`,
+        'break-even': `<i class="fas fa-bullseye" style="color:var(--accent);margin-right:5px;"></i> <strong>Break-even real</strong><br>
+            Precio en USD al que tu posición iguala la inversión considerando el tipo de cambio MXN/USD implícito en tu compra.`,
+        entry: `<i class="fas fa-arrow-right" style="color:var(--accent);margin-right:5px;"></i> <strong>Precio Entry promedio</strong><br>
+            = Inversión USD / Cantidad de tokens. Por encima del spot = ganancia no realizada.`,
+        fx: `<i class="fas fa-dollar-sign" style="color:var(--accent);margin-right:5px;"></i> <strong>TC Tu Dólar</strong><br>
+            = MXN Inv / USD Inv. Tu tipo de cambio implícito de compra. Si es mayor que el mercado, compraste caro el dólar.`,
+        'risk-reward': `<i class="fas fa-balance-scale" style="color:var(--accent);margin-right:5px;"></i> <strong>Ratio R/B</strong><br>
+            (Break-even − Entry) / (Entry − Spot). >1 = beneficio potencial supera el riesgo actual.`,
+        pnl: `<i class="fas fa-coins" style="color:var(--accent);margin-right:5px;"></i> <strong>PnL</strong><br>
+            Profit & Loss. (Valor actual − Inversión) / Inversión × 100. En tabla = PnL MXN de cada activo.`
+    };
+    msg.innerHTML = map[topic] || '¡Pregúntame otra cosa!';
+}
+
+// Init
+setTimeout(() => { updatePieChart(); updatePerformanceChart(); }, 600);
+</script>
+    <!-- ===== Service Worker ===== -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('sw.js').catch(e => console.warn('SW error:', e));
+        });
+      }
+    </script>
+</body>
+</html>
