@@ -1,7 +1,7 @@
 // ===== Service Worker — Portfolio Élite =====
 // Sube la versión (v1 -> v2 ...) cada vez que cambies index.html
 // para forzar la actualización de la caché en los dispositivos.
-const CACHE_NAME = 'portfolio-v1';
+const CACHE_NAME = 'portfolio-v2';
 
 // Archivos propios de la app que se cachean al instalar.
 const APP_SHELL = [

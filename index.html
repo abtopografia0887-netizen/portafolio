@@ -170,6 +170,38 @@
             right: 0;
             background: linear-gradient(to left, var(--ticker-bg), transparent);
         }
+        /* Botón flotante de actualizar, a la altura del ticker */
+        .ticker-refresh {
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 3;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid var(--border-bright);
+            border-radius: 7px;
+            background: var(--bg-elevated);
+            color: var(--accent);
+            cursor: pointer;
+            font-size: 13px;
+            transition: background 0.2s, color 0.2s, transform 0.2s;
+            flex-shrink: 0;
+        }
+        .ticker-refresh:hover {
+            background: var(--accent);
+            color: var(--bg-base);
+        }
+        .ticker-refresh:active i { animation: spin-refresh 0.6s linear; }
+        @keyframes spin-refresh {
+            from { transform: rotate(0deg); }
+            to   { transform: rotate(360deg); }
+        }
+        /* el ticker no debe pasar por debajo del botón */
+        .header-ticker .ticker-track { padding-right: 46px; }
         .ticker-track {
             display: flex;
             align-items: center;
@@ -818,6 +850,83 @@
             .btn-primary { padding: 6px 10px; }
             .header-title { font-size: 1rem; }
         }
+        /* ===== Pantalla de bloqueo ===== */
+        #lock-screen {
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            background: var(--bg-base);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-image: radial-gradient(circle at 50% 35%, rgba(200,169,126,0.06), transparent 60%);
+        }
+        #lock-screen.hidden { display: none; }
+        .lock-box {
+            text-align: center;
+            padding: 40px 32px;
+            max-width: 340px;
+            width: 90%;
+        }
+        .lock-icon {
+            font-size: 56px;
+            color: var(--accent);
+            margin-bottom: 20px;
+            animation: pulse-bronze 2.5s infinite;
+        }
+        .lock-title {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 2rem;
+            letter-spacing: 0.14em;
+            color: var(--text-primary);
+            margin-bottom: 6px;
+        }
+        .lock-sub {
+            font-family: 'DM Mono', monospace;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin-bottom: 28px;
+        }
+        .lock-btn {
+            width: 100%;
+            padding: 14px;
+            border: 1px solid var(--accent);
+            border-radius: 9px;
+            background: var(--accent);
+            color: var(--bg-base);
+            font-family: 'Syne', sans-serif;
+            font-weight: 700;
+            font-size: 0.95rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: opacity 0.2s, transform 0.1s;
+        }
+        .lock-btn:hover { opacity: 0.88; }
+        .lock-btn:active { transform: scale(0.98); }
+        .lock-setup-btn {
+            width: 100%;
+            margin-top: 12px;
+            padding: 11px;
+            border: 1px solid var(--border-bright);
+            border-radius: 9px;
+            background: transparent;
+            color: var(--text-secondary);
+            font-family: 'DM Mono', monospace;
+            font-size: 0.78rem;
+            cursor: pointer;
+            transition: color 0.2s, border-color 0.2s;
+        }
+        .lock-setup-btn:hover { color: var(--accent); border-color: var(--accent); }
+        .lock-err {
+            margin-top: 16px;
+            color: var(--red);
+            font-family: 'DM Mono', monospace;
+            font-size: 0.74rem;
+            min-height: 16px;
+        }
     </style>
     <!-- ===== PWA ===== -->
     <link rel="manifest" href="manifest.json">
@@ -828,6 +937,22 @@
     <link rel="apple-touch-icon" href="icon-192.png">
 </head>
 <body>
+
+<!-- ===== PANTALLA DE BLOQUEO (huella / PIN) ===== -->
+<div id="lock-screen">
+    <div class="lock-box">
+        <div class="lock-icon"><i class="fas fa-fingerprint"></i></div>
+        <div class="lock-title">Portfolio Élite</div>
+        <div class="lock-sub" id="lock-sub">Toca para desbloquear</div>
+        <button class="lock-btn" id="lock-unlock-btn">
+            <i class="fas fa-fingerprint"></i> Desbloquear
+        </button>
+        <button class="lock-setup-btn" id="lock-setup-btn" style="display:none;">
+            Activar bloqueo con huella
+        </button>
+        <div class="lock-err" id="lock-err"></div>
+    </div>
+</div>
 
 <!-- ===== HEADER — 2 filas ===== -->
 <header>
@@ -854,13 +979,13 @@
             <button class="btn btn-icon" id="dark-toggle" title="Cambiar tema">
                 <i class="fas fa-circle-half-stroke" id="dark-icon"></i>
             </button>
-            <button class="btn btn-primary" onclick="fetchMarketData()">
-                <i class="fas fa-sync-alt"></i><span class="btn-label"> Actualizar</span>
-            </button>
         </div>
     </div>
     <!-- Fila 2: Ticker de precios animado -->
     <div class="header-ticker">
+        <button class="ticker-refresh" onclick="fetchMarketData()" title="Actualizar precios" aria-label="Actualizar">
+            <i class="fas fa-sync-alt"></i>
+        </button>
         <div class="ticker-track" id="ticker-track">
             <!-- Set A -->
             <div class="ticker-fx">
@@ -2451,6 +2576,124 @@ function showTopicExplanation(topic) {
 // Init
 setTimeout(() => { updatePieChart(); updatePerformanceChart(); }, 600);
 </script>
+    <!-- ===== Bloqueo biométrico (WebAuthn) ===== -->
+    <script>
+    (function () {
+        const KEY_ID  = 'pf_lock_credential_id';   // id de la credencial registrada
+        const KEY_ON  = 'pf_lock_enabled';          // '1' si el bloqueo está activo
+        const screen  = document.getElementById('lock-screen');
+        const subEl   = document.getElementById('lock-sub');
+        const errEl   = document.getElementById('lock-err');
+        const unlockBtn = document.getElementById('lock-unlock-btn');
+        const setupBtn  = document.getElementById('lock-setup-btn');
+
+        const supported = !!(window.PublicKeyCredential && navigator.credentials);
+        const enabled   = localStorage.getItem(KEY_ON) === '1';
+
+        function b64ToBuf(b64) {
+            const bin = atob(b64.replace(/-/g, '+').replace(/_/g, '/'));
+            const buf = new Uint8Array(bin.length);
+            for (let i = 0; i < bin.length; i++) buf[i] = bin.charCodeAt(i);
+            return buf;
+        }
+        function bufToB64(buf) {
+            const bytes = new Uint8Array(buf);
+            let bin = '';
+            for (let i = 0; i < bytes.length; i++) bin += String.fromCharCode(bytes[i]);
+            return btoa(bin);
+        }
+        function randBuf(n) {
+            const b = new Uint8Array(n);
+            crypto.getRandomValues(b);
+            return b;
+        }
+        function unlock() {
+            screen.classList.add('hidden');
+            document.body.style.overflow = '';
+        }
+        function showErr(msg) { errEl.textContent = msg || ''; }
+
+        // --- Caso 1: navegador sin WebAuthn -> no bloqueamos, app abierta ---
+        if (!supported) { unlock(); return; }
+
+        // --- Caso 2: bloqueo NO activado todavía -> mostramos opción de activarlo ---
+        if (!enabled) {
+            subEl.textContent = 'Bloqueo desactivado';
+            unlockBtn.style.display = 'none';
+            setupBtn.style.display = 'block';
+            // dejamos la app visible detrás; el usuario puede activar o entrar
+            // Botón extra para entrar sin activar:
+            const skip = document.createElement('button');
+            skip.className = 'lock-setup-btn';
+            skip.textContent = 'Entrar sin bloqueo';
+            skip.onclick = unlock;
+            setupBtn.parentNode.appendChild(skip);
+
+            setupBtn.onclick = async function () {
+                showErr('');
+                try {
+                    const cred = await navigator.credentials.create({
+                        publicKey: {
+                            challenge: randBuf(32),
+                            rp: { name: 'Portfolio Elite' },
+                            user: {
+                                id: randBuf(16),
+                                name: 'portfolio-user',
+                                displayName: 'Portfolio'
+                            },
+                            pubKeyCredParams: [
+                                { type: 'public-key', alg: -7 },
+                                { type: 'public-key', alg: -257 }
+                            ],
+                            authenticatorSelection: {
+                                authenticatorAttachment: 'platform',
+                                userVerification: 'required'
+                            },
+                            timeout: 60000
+                        }
+                    });
+                    localStorage.setItem(KEY_ID, bufToB64(cred.rawId));
+                    localStorage.setItem(KEY_ON, '1');
+                    unlock();
+                } catch (e) {
+                    showErr('No se pudo activar: ' + (e.name || 'error'));
+                }
+            };
+            return;
+        }
+
+        // --- Caso 3: bloqueo activo -> exigir huella ---
+        document.body.style.overflow = 'hidden';
+        subEl.textContent = 'Usa tu huella o Face ID';
+
+        async function doUnlock() {
+            showErr('');
+            const idB64 = localStorage.getItem(KEY_ID);
+            if (!idB64) { unlock(); return; }
+            try {
+                await navigator.credentials.get({
+                    publicKey: {
+                        challenge: randBuf(32),
+                        allowCredentials: [{
+                            type: 'public-key',
+                            id: b64ToBuf(idB64),
+                            transports: ['internal']
+                        }],
+                        userVerification: 'required',
+                        timeout: 60000
+                    }
+                });
+                unlock();
+            } catch (e) {
+                showErr('Verificación fallida. Intenta de nuevo.');
+            }
+        }
+        unlockBtn.onclick = doUnlock;
+        // intento automático al cargar
+        setTimeout(doUnlock, 400);
+    })();
+    </script>
+
     <!-- ===== Service Worker ===== -->
     <script>
       if ('serviceWorker' in navigator) {
